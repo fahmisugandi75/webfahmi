@@ -8,7 +8,7 @@ import IconCloud from '@/components/ui/icon-cloud'
 
 export default function Hero() {
   return (
-    <div className="relative bg-white h-screen overflow-hidden">
+    <div className="relative bg-white min-h-screen overflow-hidden">
       <GridPattern 
         className="absolute inset-0 z-0"
         width={60}
@@ -39,7 +39,7 @@ export default function Hero() {
             </div>
             <div className="lg:w-1/2 mt-6 lg:mt-0 flex justify-center flex-col">
             <div className="-mb-24">
-                <IconCloud iconSlugs={['react', 'nextjs', 'typescript', 'tailwindcss', 'figma', 'adobephotoshop', 'wordpress', 'adobeillustrator', 'html5', 'css3', 'supabase', 'github', 'elementor', 'adobeindesign', 'amazonaws']} />
+                <IconCloud iconSlugs={['react', 'nextjs', 'typescript', 'tailwindcss', 'figma', 'adobephotoshop', 'wordpress', 'adobeillustrator', 'html5', 'css3', 'supabase', 'github', 'elementor', 'adobeindesign', 'amazonaws', 'cpanel', 'nginx']} />
               </div> 
               <Image
                 src="https://yfxskljlopmcwmghykcl.supabase.co/storage/v1/object/public/avatars/84b3ff40-57d8-40fa-9708-539e129a3f57-0.6619754556250563.png"
