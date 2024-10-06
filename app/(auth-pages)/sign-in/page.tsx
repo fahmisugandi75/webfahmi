@@ -8,7 +8,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { GithubIcon } from "lucide-react";
 
-export default function Login({ searchParams }: { searchParams: Message }) {
+export default function Login({ searchParams }: { searchParams: Message }) 
+
+{
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">

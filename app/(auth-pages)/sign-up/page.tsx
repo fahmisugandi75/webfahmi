@@ -8,11 +8,8 @@ import { SmtpMessage } from "../smtp-message";
 import { Button } from "@/components/ui/cta-button";
 import { GithubIcon } from "lucide-react";
 
-export default function SignUp({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
+export default function SignUp({ searchParams }: { searchParams: Message })  {
+
   return (
     <div className="flex min-h-screen items-center justify-center">
     <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
