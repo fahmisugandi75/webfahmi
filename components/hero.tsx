@@ -22,7 +22,7 @@ export default function Hero() {
             <div className="lg:w-1/2 text-center lg:text-left">
               <Announcement />
               <h1 className="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl my-2">
-                Senior website designer for hire!
+                Senior UX/UI designer for hire!
               </h1>
               <p className="mt-4 text-base sm:text-lg leading-7 text-gray-600">
                 Fahmi is a seasoned expert in graphic design, UI/UX, and web development (WordPress, PHP, NextJs), with over 10 years of experience.
