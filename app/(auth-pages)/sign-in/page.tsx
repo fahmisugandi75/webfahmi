@@ -15,7 +15,7 @@ export default function Login({ searchParams }: { searchParams: Message })
 {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-full sm:w-[350px]">
+      <Card className="w-full sm:w-[400px]">
         <CardHeader>
           <div className="flex flex-col items-center space-y-2 text-center">
             {/* Logo placeholder with link to homepage */}
