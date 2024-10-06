@@ -38,7 +38,7 @@ export default function Hero() {
               </div>
             </div>
             <div className="lg:w-1/2 mt-6 lg:mt-0 flex justify-center flex-col">
-            <div className="-mt-14">
+            <div className="-mb-24">
                 <IconCloud iconSlugs={['react', 'nextjs', 'typescript', 'tailwindcss', 'figma', 'adobephotoshop', 'wordpress', 'adobeillustrator', 'html5', 'css3', 'supabase', 'github', 'elementor', 'adobeindesign', 'amazonaws']} />
               </div> 
               <Image
@@ -46,7 +46,7 @@ export default function Hero() {
                 alt="Fahmi - Senior Website Designer"
                 width={1000}
                 height={1000}
-                className="-mr-96 -mt-96 z-10"
+                className="-mr-96 -mt-72 z-10"
               />
               
             </div>
