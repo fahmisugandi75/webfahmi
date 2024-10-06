@@ -101,7 +101,7 @@ export function GridPattern({
       ref={containerRef}
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute inset-0 h-full w-full stroke-orange-300/20",
+        "pointer-events-none absolute inset-0 h-full w-full stroke-gray-300/30",
         skew, // Apply skew class
         className
       )}
