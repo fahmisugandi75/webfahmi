@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 // Add these imports
-import { Button } from "@/components/ui/cta-button";
+import { Button } from "@/components/ui/button";
 import { GithubIcon } from "lucide-react";
 
 export default function Login({ searchParams }: { searchParams: Message }) {
@@ -76,7 +76,7 @@ export default function Login({ searchParams }: { searchParams: Message }) {
             </span>
           </div>
         </div>
-        <Button variant="secondary" className="w-full">
+        <Button variant="outline" className="w-full">
           <GithubIcon className="mr-2 h-4 w-4" />
           GitHub
         </Button>
