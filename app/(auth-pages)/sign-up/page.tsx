@@ -73,7 +73,7 @@ export default function SignUp({
             </span>
           </div>
         </div>
-        <Button variant="secondary" className="w-full">
+        <Button variant="outline" className="w-full">
           <GithubIcon className="mr-2 h-4 w-4" />
           GitHub
         </Button>
