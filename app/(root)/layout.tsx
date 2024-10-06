@@ -1,5 +1,3 @@
-import NavBar from "@/components/navbar";
-
 export default function RootLayout({
   children,
 }: {
@@ -7,7 +5,7 @@ export default function RootLayout({
 }) {
   return (
     <>
-      <NavBar hasEnvVars={true} />
+    {/* <NavBar hasEnvVars={true} /> */}
       <main>{children}</main>
     </>
   );
