@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from '@/components/ui/cta-button';  // Adjust the path as needed
 
 export default function DeployButton() {
   return (
