@@ -10,7 +10,7 @@ interface NavBarProps {
 
 export default function Navbar({ hasEnvVars }: NavBarProps) {
   return (
-    <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+    <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16 z-[999] relative">
       <div className="w-full max-w-5xl flex justify-between items-center p-3 text-sm">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2">

@@ -3,7 +3,8 @@ import { Search } from "@/components/search"
 import { UserNav } from "@/components/user-nav"
 import { ModeToggle } from "@/components/ui/mode-toggle"
 import { createClient } from "@/utils/supabase/server"
-import { Toaster } from "@/components/ui/toaster"  // Add this import
+import { Toaster } from "@/components/ui/toaster"
+import { redirect } from "next/navigation"
 
 export default async function DashboardLayout({
   children,
@@ -13,6 +14,10 @@ export default async function DashboardLayout({
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  if (!user) {
+    return redirect("/sign-in")
+  }
+
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen">
       <Sidebar className="w-full md:w-64 shrink-0" />
@@ -21,7 +26,7 @@ export default async function DashboardLayout({
           <div className="flex h-16 items-center px-8">
             <Search />
             <div className="ml-auto flex items-center space-x-4">
-              <p className="text-sm font-medium">Welcome, {user?.user_metadata?.display_name || 'Guest'}!</p>
+              <p className="text-sm font-medium">Welcome, {user.user_metadata?.display_name || 'Guest'}!</p>
               <ModeToggle />
               <UserNav user={user} />
             </div>
@@ -31,7 +36,7 @@ export default async function DashboardLayout({
           {children}
         </main>
       </div>
-      <Toaster />  {/* Add this line */}
+      <Toaster />
     </div>
   )
 }

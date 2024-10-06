@@ -1,12 +1,13 @@
-import Hero from "@/components/hero";
-import FeatureSection from "@/components/feature-section";
+'use client'
 
-export default function Index() {
+import FeaturedSection from '@/components/featured-section'
+import Hero from '@/components/hero'
+
+export default function Home() {
   return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
+    <div className="bg-white">
       <Hero />
-      <FeatureSection />
-      {/* Add other sections or components here */}
+      <FeaturedSection />
     </div>
-  );
+  )
 }
