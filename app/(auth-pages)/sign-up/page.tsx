@@ -103,7 +103,6 @@ export default function SignUp({ searchParams }: { searchParams: Message })  {
             </Link>
           </p>
           <FormMessage message={searchParams} />
-          <SmtpMessage />
         </CardFooter>
       </Card>
     </div>
