@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { BorderBeam } from '@/components/ui/border-beam'
 import { Confetti } from '@/components/ui/confetti'
+import BoxReveal from './ui/box-reveal';
 
 export default function Announcement() {
   const [showConfetti, setShowConfetti] = useState(false);
   const confettiRef = useRef<any>(null);
 
-  const handleClick = useCallback(() => {
+  const fireConfetti = useCallback(() => {
     setShowConfetti(true);
     if (confettiRef.current) {
       confettiRef.current.fire({
@@ -16,15 +17,24 @@ export default function Announcement() {
         spread: 100,
         origin: { y: 0.6 },
         infinite: true,
-        particleSize: 15 // Increased particle size
+        particleSize: 15
       });
     }
   }, []);
 
+  useEffect(() => {
+    // Fire confetti on component mount
+    fireConfetti();
+  }, [fireConfetti]);
+
+  const handleClick = useCallback(() => {
+    fireConfetti();
+  }, [fireConfetti]);
+
   return (
     <>
-      <div className="sm:mb-8 flex justify-center lg:justify-start">
-        <div
+      <BoxReveal><div className="sm:mb-8 flex justify-center lg:justify-start">
+      <div
           className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 cursor-pointer flex items-center"
           onClick={handleClick}
         >
@@ -35,7 +45,7 @@ export default function Announcement() {
           </span>
           I am available to work.{' '}
         </div>
-      </div>
+      </div></BoxReveal>
       <Confetti
         ref={confettiRef}
         style={{

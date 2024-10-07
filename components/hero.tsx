@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import CalendarBook from './calendar-book'
 import IconCloud from '@/components/ui/icon-cloud'
+import { BoxReveal } from '@/components/ui/box-reveal'
 
 export default function Hero() {
   return (
@@ -22,20 +23,26 @@ export default function Hero() {
           <div className="flex flex-col lg:flex-row items-center justify-between">
             <div className="lg:w-1/2 text-center lg:text-left mb-16 lg:-mb-16">
               <Announcement />
-              <h1 className="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl my-2">
-                Senior UX/UI designer for hire!
-              </h1>
-              <p className="mt-8 text-base sm:text-lg leading-7 text-gray-600">
-                Fahmi is a seasoned expert in graphic design, UI/UX, and web development (WordPress, PHP, NextJs), with over 10 years of experience for international clients across consulting, banking, healthcare, wellness, and tech industries.
-              </p>
-              <div className="mt-6 sm:mt-10 flex items-center justify-center lg:justify-start gap-x-6">
-                <Link href="https://yfxskljlopmcwmghykcl.supabase.co/storage/v1/object/public/avatars/Fahmi%20-%20Senior%20Graphic%20&%20Web%20Designer%20-%20copy.pdf" target="_blank">
-                  <Button>
-                    Download CV
-                  </Button>
-                </Link>
-                <CalendarBook />
-              </div>
+              <BoxReveal>
+                <h1 className="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl my-2">
+                  Senior UX/UI designer for hire!
+                </h1>
+              </BoxReveal>
+              <BoxReveal>
+                <p className="mt-8 text-base sm:text-lg leading-7 text-gray-600">
+                  Fahmi is a seasoned expert in graphic design, UI/UX, and web development (WordPress, PHP, NextJs), with over 10 years of experience for international clients across consulting, banking, healthcare, wellness, and tech industries.
+                </p>
+              </BoxReveal>
+              <BoxReveal>
+                <div className="mt-6 sm:mt-10 flex items-center justify-center lg:justify-start gap-x-6">
+                  <Link href="https://yfxskljlopmcwmghykcl.supabase.co/storage/v1/object/public/avatars/Fahmi%20-%20Senior%20Graphic%20&%20Web%20Designer%20-%20copy.pdf" target="_blank">
+                    <Button>
+                      Download CV
+                    </Button>
+                  </Link>
+                  <CalendarBook />
+                </div>
+              </BoxReveal>
             </div>
             <div className="lg:w-1/2 mt-6 lg:mt-0 flex justify-center flex-col">
             <div className="-mb-24">
