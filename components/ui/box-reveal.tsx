@@ -8,6 +8,7 @@ interface BoxRevealProps {
   width?: "fit-content" | "100%";
   boxColor?: string;
   duration?: number;
+  className?: string; // Add this line
 }
 
 export const BoxReveal = ({
@@ -15,6 +16,7 @@ export const BoxReveal = ({
   width = "fit-content",
   boxColor,
   duration,
+  className = "", // Add this line
 }: BoxRevealProps) => {
   const mainControls = useAnimation();
   const slideControls = useAnimation();
@@ -33,7 +35,7 @@ export const BoxReveal = ({
   }, [isInView, mainControls, slideControls]);
 
   return (
-    <div ref={ref} style={{ position: "relative", width, overflow: "hidden" }}>
+    <div ref={ref} className={`relative overflow-hidden ${className}`} style={{ width }}> {/* Modified this line */}
       <motion.div
         variants={{
           hidden: { opacity: 0, y: 75 },
@@ -61,7 +63,7 @@ export const BoxReveal = ({
           left: 0,
           right: 0,
           zIndex: 20,
-          background: boxColor ? boxColor : "#FFFAF0", // Changed to orange-100
+          background: boxColor ? boxColor : "#FFFAF0",
         }}
       />
     </div>

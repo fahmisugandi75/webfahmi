@@ -35,20 +35,22 @@ export default function Hero() {
                   Fahmi is a seasoned expert in graphic design, UI/UX, and web development (WordPress, PHP, NextJs), with over 10 years of experience for international clients across consulting, banking, healthcare, wellness, and tech industries.
                 </p>
               </BoxReveal>
-              <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-y-4 sm:gap-x-6 w-full">
-                <div className="w-full sm:w-auto">
-                  <div className="w-full h-full">
-                    <CalendarBook />
+              <BoxReveal width="100%" className="flex justify-center sm:justify-start">
+                <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-y-4 sm:gap-x-6 w-full sm:max-w-md">
+                  <div className="w-full sm:w-auto">
+                    <div className="w-full h-full">
+                      <CalendarBook />
+                    </div>
+                  </div>
+                  <div className="w-full sm:w-auto">
+                    <Link href="https://yfxskljlopmcwmghykcl.supabase.co/storage/v1/object/public/avatars/Fahmi%20-%20Senior%20Graphic%20&%20Web%20Designer%20-%20copy.pdf" target="_blank" className="block w-full">
+                      <Button variant="outline" className="w-full">
+                        Download CV
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-                <div className="w-full sm:w-auto">
-                  <Link href="https://yfxskljlopmcwmghykcl.supabase.co/storage/v1/object/public/avatars/Fahmi%20-%20Senior%20Graphic%20&%20Web%20Designer%20-%20copy.pdf" target="_blank" className="block w-full">
-                    <Button variant="outline">
-                      Download CV
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+              </BoxReveal>
             </div>
             <div className="lg:w-1/2 mt-6 lg:mt-0 flex justify-center flex-col">
             <div className="-mb-24">
