@@ -33,7 +33,7 @@ export default function Announcement() {
 
   return (
     <>
-      <BoxReveal><div className="sm:mb-8 flex justify-center lg:justify-start">
+      <BoxReveal><div className="sm:mb-8 flex justify-center lg:justify-start py-2">
       <div
           className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 cursor-pointer flex items-center"
           onClick={handleClick}
