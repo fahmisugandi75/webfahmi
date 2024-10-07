@@ -9,7 +9,7 @@ import { BoxReveal } from '@/components/ui/box-reveal'
 
 export default function Hero() {
   return (
-    <div className="relative bg-white min-h-screen overflow-hidden">
+    <div className="relative bg-white min-h-screen overflow-hidden pt-12 sm:pt-0">
       <GridPattern 
         className="absolute inset-0 z-0"
         width={60}
@@ -22,7 +22,9 @@ export default function Hero() {
         <div className="mx-auto max-w-7xl w-full">
           <div className="flex flex-col lg:flex-row items-center justify-between">
             <div className="lg:w-1/2 text-center lg:text-left mb-16 lg:-mb-16">
-              <Announcement />
+              <div className="flex justify-center lg:justify-start">
+                <Announcement />
+              </div>
               <BoxReveal>
                 <h1 className="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl my-2">
                   Senior UX/UI designer for hire!
@@ -33,16 +35,20 @@ export default function Hero() {
                   Fahmi is a seasoned expert in graphic design, UI/UX, and web development (WordPress, PHP, NextJs), with over 10 years of experience for international clients across consulting, banking, healthcare, wellness, and tech industries.
                 </p>
               </BoxReveal>
-              <BoxReveal>
-                <div className="mt-6 sm:mt-10 flex items-center justify-center lg:justify-start gap-x-6">
-                  <Link href="https://yfxskljlopmcwmghykcl.supabase.co/storage/v1/object/public/avatars/Fahmi%20-%20Senior%20Graphic%20&%20Web%20Designer%20-%20copy.pdf" target="_blank">
-                    <Button>
+              <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-y-4 sm:gap-x-6 w-full">
+                <div className="w-full sm:w-auto">
+                  <div className="w-full h-full">
+                    <CalendarBook />
+                  </div>
+                </div>
+                <div className="w-full sm:w-auto">
+                  <Link href="https://yfxskljlopmcwmghykcl.supabase.co/storage/v1/object/public/avatars/Fahmi%20-%20Senior%20Graphic%20&%20Web%20Designer%20-%20copy.pdf" target="_blank" className="block w-full">
+                    <Button variant="outline" className="h-full">
                       Download CV
                     </Button>
                   </Link>
-                  <CalendarBook />
                 </div>
-              </BoxReveal>
+              </div>
             </div>
             <div className="lg:w-1/2 mt-6 lg:mt-0 flex justify-center flex-col">
             <div className="-mb-24">
