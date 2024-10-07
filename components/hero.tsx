@@ -32,7 +32,7 @@ export default function Hero() {
               </BoxReveal>
               <BoxReveal>
                 <p className="lg:mt-8 mt-2 text-base sm:text-lg leading-7 text-gray-600">
-                  Fahmi is a seasoned expert in graphic design, UI/UX, and web development (WordPress, PHP, NextJs), with over 10 years of experience workeing with international clients across consulting, banking, healthcare, wellness, and tech industries.
+                  Fahmi is a seasoned expert in graphic design, UI/UX, and web development (WordPress, PHP, NextJs), with over 10 years of experience working with international clients across consulting, banking, healthcare, wellness, and tech industries.
                 </p>
               </BoxReveal>
               <BoxReveal className="md:max-w-full lg:w-1/2">
