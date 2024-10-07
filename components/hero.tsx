@@ -31,7 +31,7 @@ export default function Hero() {
                 </h1>
               </BoxReveal>
               <BoxReveal>
-                <p className="mt-8 text-base sm:text-lg leading-7 text-gray-600">
+                <p className="lg:mt-8 mt-2 text-base sm:text-lg leading-7 text-gray-600">
                   Fahmi is a seasoned expert in graphic design, UI/UX, and web development (WordPress, PHP, NextJs), with over 10 years of experience for international clients across consulting, banking, healthcare, wellness, and tech industries.
                 </p>
               </BoxReveal>
