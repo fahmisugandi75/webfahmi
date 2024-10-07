@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Logo } from "@/components/logo";
 
 export default function ForgotPassword({
   searchParams,
@@ -16,11 +17,9 @@ export default function ForgotPassword({
     <div className="flex min-h-screen items-center justify-center">
       <Card className="w-full sm:w-[400px]">
         <CardHeader className="space-y-1">
-          <Link href="/" className="mb-4 flex justify-center">
-            <div className="h-20 w-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-2xl font-bold">
-              LOGO
-            </div>
-          </Link>
+          <div className="flex justify-center">
+            <Logo />
+          </div>
           <h1 className="text-2xl font-semibold tracking-tight text-center">
             Reset Password
           </h1>

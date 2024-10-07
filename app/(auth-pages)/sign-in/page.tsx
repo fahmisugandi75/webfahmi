@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { GithubIcon } from "lucide-react";
 // Add this import
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Logo } from '@/components/logo';
 
 export default function Login({ searchParams }: { searchParams: Message }) 
 
@@ -18,11 +19,8 @@ export default function Login({ searchParams }: { searchParams: Message })
       <Card className="w-full sm:w-[400px]">
         <CardHeader>
           <div className="flex flex-col items-center space-y-2 text-center">
-            {/* Logo placeholder with link to homepage */}
-            <Link href="/" className="mb-4">
-              <div className="h-20 w-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-2xl font-bold">
-                LOGO
-              </div>
+            <Link href="/">
+              <Logo />
             </Link>
             <h1 className="text-2xl font-semibold tracking-tight">
               Login with your account

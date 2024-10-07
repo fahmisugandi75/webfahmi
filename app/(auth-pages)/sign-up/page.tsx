@@ -8,18 +8,17 @@ import { SmtpMessage } from "../smtp-message";
 import { Button } from "@/components/ui/cta-button";
 import { GithubIcon } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Logo } from '@/components/logo';
 
 export default function SignUp({ searchParams }: { searchParams: Message })  {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <Card className="w-full sm:w-[400px]">
         <CardHeader className="space-y-1">
-          {/* Logo placeholder with link to homepage */}
-          <Link href="/" className="mb-4 flex justify-center">
-            <div className="h-20 w-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-2xl font-bold">
-              LOGO
-            </div>
-          </Link>
+          {/* Logo */}
+          <div className="flex justify-center">
+            <Logo />
+          </div>
           <h1 className="text-2xl font-semibold tracking-tight text-center">
             Create an account
           </h1>

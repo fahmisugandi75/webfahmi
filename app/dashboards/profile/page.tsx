@@ -1,3 +1,5 @@
+'use client'
+
 import { ProfileForm } from "@/components/profile-form"
 import AccountSettings from "@/components/account-setting"
 
