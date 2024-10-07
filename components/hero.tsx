@@ -43,7 +43,7 @@ export default function Hero() {
                 </div>
                 <div className="w-full sm:w-auto">
                   <Link href="https://yfxskljlopmcwmghykcl.supabase.co/storage/v1/object/public/avatars/Fahmi%20-%20Senior%20Graphic%20&%20Web%20Designer%20-%20copy.pdf" target="_blank" className="block w-full">
-                    <Button variant="outline" className="h-full">
+                    <Button variant="outline">
                       Download CV
                     </Button>
                   </Link>
