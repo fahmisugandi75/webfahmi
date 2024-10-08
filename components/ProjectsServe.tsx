@@ -1,10 +1,24 @@
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
-import { ProjectsTable } from '@/components/ProjectsTable';
+import { FC } from 'react';
+
+interface Project {
+  // Define your project properties here
+}
+
+interface ProjectsTableProps {
+  projects: Project[];
+}
+
+const ProjectsTable: FC<ProjectsTableProps> = ({ projects }) => {
+  return (
+    // ... existing ProjectsTable component JSX ...
+  );
+};
 
 export async function ProjectsServer() {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const { data: projects, error } = await supabase
     .from('projects')
