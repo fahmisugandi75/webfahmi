@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import { FC } from 'react';
-import { Project } from '@/types'; // Adjust the import path
+
 
 interface Project {
   // Define your project properties here
