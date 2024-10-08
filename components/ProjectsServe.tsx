@@ -16,6 +16,8 @@ const ProjectsTable: FC<ProjectsTableProps> = ({ projects }) => {
   );
 };
 
+export default ProjectsTable;
+
 export async function ProjectsServer() {
   const cookieStore = cookies();
   const supabase = createClient();
