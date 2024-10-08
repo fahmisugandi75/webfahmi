@@ -9,17 +9,6 @@ import { supabase } from '@/lib/supabaseClient';
 import { useProjects, ProjectProvider } from './ProjectContext';
 import { Eye, Trash2, PlusCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import CreateProjectForm from '@/components/createprojectform'; // You'll need to create this component
 import { createClient } from '@/utils/supabase/client';

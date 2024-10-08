@@ -12,11 +12,8 @@ interface ProjectsTableProps {
 
 const ProjectsTable: FC<ProjectsTableProps> = ({ projects }) => {
   return (
-    // ... existing ProjectsTable component JSX ...
   );
 };
-
-export default ProjectsTable;
 
 export async function ProjectsServer() {
   const cookieStore = cookies();
