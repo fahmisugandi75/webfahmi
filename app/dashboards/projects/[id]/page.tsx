@@ -7,7 +7,7 @@ import { KanbanBoard } from '@/components/kanban-board';
 
 export default function ProjectPage() {
   const params = useParams();
-  const projectId = params.id as string;
+  const projectId = (params?.id as string) || '';
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const supabase = createClientComponentClient();
