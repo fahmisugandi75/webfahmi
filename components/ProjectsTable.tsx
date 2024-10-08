@@ -28,7 +28,11 @@ interface Profile {
   fullname: string;
 }
 
-export function ProjectsTable() {
+interface ProjectsTableProps {
+  projects: Project[];
+}
+
+export function ProjectsTable({ projects }: ProjectsTableProps) {
   const projectsContext = useProjects();
   // If the context is not available, render the table wrapped in a provider
   if (!projectsContext) {
