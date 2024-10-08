@@ -29,24 +29,22 @@ interface Profile {
 }
 
 interface ProjectsTableProps {
-  projects: Project[];
+  projects?: Project[]; // Make projects optional
 }
 
 export function ProjectsTable({ projects }: ProjectsTableProps) {
   const projectsContext = useProjects();
-  // If the context is not available, render the table wrapped in a provider
   if (!projectsContext) {
     return (
       <ProjectProvider>
-        <ProjectsTableContent />
+        <ProjectsTableContent initialProjects={projects} />
       </ProjectProvider>
     );
   }
-  // If the context is available, render the table content directly
-  return <ProjectsTableContent />;
+  return <ProjectsTableContent initialProjects={projects} />;
 }
 
-function ProjectsTableContent() {
+function ProjectsTableContent({ initialProjects }: { initialProjects?: Project[] }) {
   const { projects, setProjects } = useProjects();
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [loading, setLoading] = useState(true);
@@ -60,13 +58,18 @@ function ProjectsTableContent() {
   useEffect(() => {
     async function fetchProjectsAndProfiles() {
       try {
-        // Fetch projects
-        const { data: projectsData, error: projectsError } = await supabase
-          .from('projects')
-          .select('*')
-          .order('created_at', { ascending: false });
+        if (initialProjects) {
+          setProjects(initialProjects);
+        } else {
+          // Fetch projects if not provided
+          const { data: projectsData, error: projectsError } = await supabase
+            .from('projects')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-        if (projectsError) throw projectsError;
+          if (projectsError) throw projectsError;
+          setProjects(projectsData);
+        }
 
         // Fetch profiles
         const { data: profilesData, error: profilesError } = await supabase
@@ -81,7 +84,6 @@ function ProjectsTableContent() {
         );
 
         // Update the context state with fetched projects
-        setProjects(projectsData);
         setProfiles(profilesMap);
         setLoading(false);
       } catch (error) {
@@ -92,7 +94,7 @@ function ProjectsTableContent() {
     }
 
     fetchProjectsAndProfiles();
-  }, [setProjects]);
+  }, [setProjects, initialProjects]);
 
   const handleViewTasks = (projectId: string) => {
     router.push(`/dashboards/projects/${projectId}`);
