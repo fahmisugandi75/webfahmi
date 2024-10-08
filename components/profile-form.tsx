@@ -9,21 +9,21 @@ import { createClient } from '@/utils/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Edit } from 'lucide-react'
-import { cn } from "@/lib/utils" // Make sure you have this utility function
-import { Textarea } from '@/components/ui/textarea'  // Add this import
+import { cn } from "@/lib/utils"
+import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 
 export function ProfileForm() {
-  const { toast } = useToast()  // Update this line
+  const { toast } = useToast()
   const [user, setUser] = useState<User | null>(null)
-  const [displayName, setDisplayName] = useState('')
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [avatarUrl, setAvatarUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [tempAvatarUrl, setTempAvatarUrl] = useState<string | null>(null)
-  const [bio, setBio] = useState('')  // Add this new state variable
-  const [website, setWebsite] = useState('')  // Add this new state variable
+  const [bio, setBio] = useState('')
+  const [website, setWebsite] = useState('')
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -33,22 +33,22 @@ export function ProfileForm() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         setUser(user)
-        setDisplayName(user.user_metadata?.display_name || '')
         setEmail(user.email || '')
-        setAvatarUrl(user.user_metadata?.avatar_url || '')
 
         // Fetch profile data from the Profiles table
         const { data: profileData, error } = await supabase
           .from('Profiles')
-          .select('bio, website')
+          .select('fullname, bio, website, avatar_url')
           .eq('id', user.id)
           .single()
 
         if (error) {
           console.error('Error fetching profile:', error)
         } else if (profileData) {
+          setFullName(profileData.fullname || '')
           setBio(profileData.bio || '')
           setWebsite(profileData.website || '')
+          setAvatarUrl(profileData.avatar_url || '')
         }
       }
     }
@@ -78,9 +78,11 @@ export function ProfileForm() {
       let newAvatarUrl = avatarUrl
 
       if (selectedFile) {
+        // Generate a unique file name
         const fileExt = selectedFile.name.split('.').pop()
         const fileName = `${user?.id}-${Math.random()}.${fileExt}`
 
+        // Upload the file to Supabase storage
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(fileName, selectedFile, { upsert: true })
@@ -89,6 +91,7 @@ export function ProfileForm() {
           throw new Error(`Upload failed: ${uploadError.message}`)
         }
 
+        // Get the public URL of the uploaded file
         const { data: { publicUrl } } = supabase.storage
           .from('avatars')
           .getPublicUrl(fileName)
@@ -96,59 +99,25 @@ export function ProfileForm() {
         newAvatarUrl = publicUrl
       }
 
-      // Update user metadata (display name, avatar)
-      const { data: userData, error: updateError } = await supabase.auth.updateUser({
-        data: { 
-          display_name: displayName,
-          avatar_url: newAvatarUrl,
-        }
-      })
-
-      if (updateError) {
-        throw new Error(`Profile update failed: ${updateError.message}`)
-      }
-
-      // Check if profile exists
-      const { data: existingProfile, error: fetchError } = await supabase
+      // Update profile in the Profiles table
+      const { error: profileError } = await supabase
         .from('Profiles')
-        .select('id')
-        .eq('id', user?.id)
-        .single()
-
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        throw new Error(`Profile fetch failed: ${fetchError.message}`)
-      }
-
-      let profileOperation
-      if (!existingProfile) {
-        // Insert new profile
-        profileOperation = supabase
-          .from('Profiles')
-          .insert({ id: user?.id, bio, website, avatar_url: newAvatarUrl })
-      } else {
-        // Update existing profile
-        profileOperation = supabase
-          .from('Profiles')
-          .update({ bio, website, avatar_url: newAvatarUrl })
-          .eq('id', user?.id)
-      }
-
-      const { error: profileError } = await profileOperation
+        .upsert({ 
+          id: user?.id, 
+          fullname: fullName,
+          bio, 
+          website, 
+          avatar_url: newAvatarUrl 
+        })
 
       if (profileError) {
         throw new Error(`Profile update failed: ${profileError.message}`)
       }
 
       // Update local state
-      if (userData.user) {
-        setUser(userData.user)
-        setDisplayName(userData.user.user_metadata?.display_name || '')
-        setAvatarUrl(newAvatarUrl)
-        setBio(bio)
-        setWebsite(website)
-        setSelectedFile(null)
-        setTempAvatarUrl(null)
-      }
+      setAvatarUrl(newAvatarUrl)
+      setSelectedFile(null)
+      setTempAvatarUrl(null)
 
       toast({
         title: "Profile updated",
@@ -176,14 +145,14 @@ export function ProfileForm() {
           <Avatar className="h-48 w-48 overflow-hidden">
             <AvatarImage 
               src={tempAvatarUrl || avatarUrl} 
-              alt={displayName || email || 'User'} 
+              alt={fullName || email || 'User'} 
               className={cn(
                 "object-cover",
                 "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
                 "min-w-full min-h-full"
               )}
             />
-            <AvatarFallback>{(displayName || email || 'U').charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarFallback>{(fullName || email || 'U').charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div 
             className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
@@ -202,12 +171,12 @@ export function ProfileForm() {
       </div>
       <form onSubmit={handleSubmit} className="space-y-4 flex-grow">
         <div>
-          <Label htmlFor="displayName">Display Name</Label>
+          <Label htmlFor="fullName">Full Name</Label>
           <Input
-            id="displayName"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="Enter display name"
+            id="fullName"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Enter full name"
           />
         </div>
         <div>

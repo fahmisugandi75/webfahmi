@@ -18,21 +18,34 @@ export default async function DashboardLayout({
     return redirect("/sign-in")
   }
 
+  // Fetch the fullname from the Profiles table
+  const { data: profileData, error } = await supabase
+    .from('Profiles')
+    .select('fullname')
+    .eq('id', user.id)
+    .single()
+
+  if (error) {
+    console.error('Error fetching profile:', error)
+  }
+
+  const fullName = profileData?.fullname || 'Guest'
+
   return (
-    <div className="flex flex-col md:flex-row w-full min-h-screen">
-      <Sidebar className="w-full md:w-64 shrink-0" />
-      <div className="flex-1 w-full flex flex-col">
-        <header className="border-b">
+    <div className="flex min-h-screen">
+      <Sidebar className="flex-shrink-0" />
+      <div className="flex-1 flex flex-col">
+        <header className="sticky top-0 z-10 bg-background border-b">
           <div className="flex h-16 items-center px-8">
             <Search />
             <div className="ml-auto flex items-center space-x-4">
-              <p className="text-sm font-medium">Welcome, {user.user_metadata?.display_name || 'Guest'}!</p>
+              <p className="text-sm font-medium">Welcome, {fullName}!</p>
               <ModeToggle />
               <UserNav user={user} />
             </div>
           </div>
         </header>
-        <main className="flex-1 w-full p-8">
+        <main className="flex-1 p-8">
           {children}
         </main>
       </div>

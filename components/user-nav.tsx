@@ -14,11 +14,33 @@ import {
 import { createClient } from "@/utils/supabase/client"
 import { cn } from "@/lib/utils"
 import { UserAvatar } from "@/components/ui/avatar"  // Make sure this import is correct
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export function UserNav({ user }: { user: any }) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [fullName, setFullName] = useState<string>('')
+
+  useEffect(() => {
+    async function fetchFullName() {
+      if (user?.id) {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('Profiles')
+          .select('fullname')
+          .eq('id', user.id)
+          .single()
+
+        if (error) {
+          console.error('Error fetching fullname:', error)
+        } else if (data) {
+          setFullName(data.fullname || '')
+        }
+      }
+    }
+
+    fetchFullName()
+  }, [user])
 
   const handleLogout = async () => {
     try {
@@ -45,7 +67,7 @@ export function UserNav({ user }: { user: any }) {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.user_metadata?.display_name || 'Guest'}</p>
+            <p className="text-sm font-medium leading-none">{fullName || 'Guest'}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email || 'guest@example.com'}
             </p>
