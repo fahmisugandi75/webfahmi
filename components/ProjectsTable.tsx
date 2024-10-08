@@ -140,7 +140,7 @@ function ProjectsTableContent({ initialProjects }: { initialProjects?: Project[]
 
   const handleProjectCreate = async (newProject: Project) => {
     setProjects((prevProjects) => [...prevProjects, newProject]);
-    setIsDialogOpen(false); // Close the dialog after creating a project
+    setIsDialogOpen(false);
   };
 
   if (loading) return <div>Loading projects...</div>;

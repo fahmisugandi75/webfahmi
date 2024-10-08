@@ -9,9 +9,10 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useProjects } from './ProjectContext';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Project } from './ProjectsTable';
 
 interface CreateProjectFormProps {
-  onSubmit: () => void;
+  onSubmit: (newProject: Project) => void;
   onCancel: () => void;
 }
 
@@ -60,7 +61,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onSubmit, onCance
       if (error) throw error;
 
       if (data && data.length > 0) {
-        addProject(data[0]);
+        onSubmit(data[0]);  // This should be enough to update the project list
       }
 
       toast({
