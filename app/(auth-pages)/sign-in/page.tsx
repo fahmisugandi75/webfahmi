@@ -112,7 +112,9 @@ export default function Login({ searchParams }: { searchParams: { message?: stri
               Sign up
             </Link>
           </p>
-          {searchParams.message && <FormMessage message={searchParams.message} />}
+          {searchParams.message && (
+            <FormMessage message={{ message: searchParams.message }} />
+          )}
         </CardFooter>
       </Card>
     </div>
