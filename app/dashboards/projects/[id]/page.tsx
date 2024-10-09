@@ -52,31 +52,33 @@ export default function ProjectPage() {
 
   return (
     <div className="mx-auto space-y-4">
-      <div className="flex items-center justify-between mb-6 mt-2">
-        <h1 className="text-3xl font-bold">
-          {projectName ? `${projectName} Tasks` : `Project ${projectId} Tasks`}
-        </h1>
+      <div className="flex justify-between items-end mb-6 mt-2">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">
+            {projectName ? `${projectName} Tasks` : `Project ${projectId} Tasks`}
+          </h1>
+          {projectDescription && (
+            <p className="text-gray-600">{projectDescription}</p>
+          )}
+        </div>
         {ownerName && (
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 ml-4">
+            <div className="text-right">
+              <p className="text-xs text-gray-500 mb-1">Project owner</p>
+              <p className="font-semibold">{ownerName}</p>
+            </div>
             {ownerAvatar && (
               <Image
                 src={ownerAvatar}
                 alt={`${ownerName}'s avatar`}
-                width={50}
-                height={50}
+                width={48}
+                height={48}
                 className="rounded-full"
               />
             )}
-            <div>
-              <p className="text-xs text-gray-500">Project owner</p>
-              <p className="font-semibold">{ownerName}</p>
-            </div>
           </div>
         )}
       </div>
-      {projectDescription && (
-        <p className="text-gray-600 mb-4">{projectDescription}</p>
-      )}
       <KanbanBoard projectId={projectId} />
     </div>
   );
