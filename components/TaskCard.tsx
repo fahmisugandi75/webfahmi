@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { Card } from '@/components/ui/card';
 import { CalendarIcon, AlertCircle, PencilIcon, TrashIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, isToday, isPast } from 'date-fns';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,7 +41,24 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
     });
   };
 
-  const isTaskOverdue = isOverdue(task.due_date);
+  const getDueDateStatus = (dueDate: string | undefined) => {
+    if (!dueDate) return { text: "Not set", color: "text-gray-500", isAlert: false };
+    
+    const date = new Date(dueDate);
+    if (isPast(date) && !isToday(date)) {
+      return { text: "Overdue", color: "text-red-500", isAlert: true };
+    } else if (isToday(date)) {
+      return { text: "Due Today", color: "text-orange-500", isAlert: true };
+    } else {
+      return { 
+        text: format(date, 'MMM d, yyyy'), 
+        color: "text-gray-500",
+        isAlert: false
+      };
+    }
+  };
+
+  const dueDateStatus = getDueDateStatus(task.due_date);
 
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
@@ -78,21 +95,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
               <p className="text-xs text-gray-600 line-clamp-3">{task.description}</p>
               
               <div className="pt-2"> {/* Added padding top here */}
-                {isTaskOverdue ? (
-                  <div className="flex items-center text-xs text-red-500">
+                <div className={`flex items-center text-xs ${dueDateStatus.color}`}>
+                  {dueDateStatus.isAlert ? (
                     <AlertCircle className="w-4 h-4 mr-1 flex-shrink-0 mt-[1px]" />
-                    <span>Overdue</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center text-xs text-gray-500">
+                  ) : (
                     <CalendarIcon className="w-4 h-4 mr-1 flex-shrink-0 mt-[1px]" />
-                    <span>
-                      {task.due_date
-                        ? format(new Date(task.due_date), 'MMM d, yyyy')
-                        : "Not set"}
-                    </span>
-                  </div>
-                )}
+                  )}
+                  <span>{dueDateStatus.text}</span>
+                </div>
               </div>
               
               {/* Edit and Delete buttons */}
