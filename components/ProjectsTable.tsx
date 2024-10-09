@@ -148,10 +148,11 @@ function ProjectsTableContent({ initialProjects }: { initialProjects?: Project[]
 
   return (
     <div>
-      <div className="mb-4">
+      <div className="mb-4 flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-800">Projects</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" onClick={() => setIsDialogOpen(true)}>
+            <Button variant="default" onClick={() => setIsDialogOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" /> Create New Project
             </Button>
           </DialogTrigger>
