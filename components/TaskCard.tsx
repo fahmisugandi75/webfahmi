@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { EditTaskForm } from './EditTaskForm';
 import { useToast } from "@/hooks/use-toast";
+import { Task } from '@/types/task';
 
 interface TaskCardProps {
   task: Task;
@@ -42,7 +43,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
 
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
-      {(provided, snapshot) => (
+      {(provided: any, snapshot: any) => (
         <div 
           ref={provided.innerRef}
           {...provided.draggableProps}

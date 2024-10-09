@@ -11,17 +11,11 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from "@/hooks/use-toast";
+import { Task } from '@/types/task';
 
 interface EditTaskFormProps {
-  task: {
-    id: string;
-    title: string;
-    description: string;
-    priority: string;
-    due_date?: string;
-    featured_image?: string;
-  };
-  onSubmit: (updatedTask: EditTaskFormProps['task']) => void;
+  task: Task;
+  onSubmit: (updatedTask: Task) => void;
   onCancel: () => void;
 }
 

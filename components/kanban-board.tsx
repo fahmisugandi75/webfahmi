@@ -11,7 +11,6 @@ import { PlusCircle } from 'lucide-react'; // Import the icon
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { EditTaskForm } from './EditTaskForm';  // Import the EditTaskForm component
 
 interface Task {
   id: string;
@@ -63,7 +62,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     }
   };
 
-  const handleTaskCreate = async (newTask) => {
+  const handleTaskCreate = async (newTask: Task) => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
     setIsDialogOpen(false); // Close the dialog after creating a task
   };
@@ -177,7 +176,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                 </CardHeader>
                 <CardContent>
                   <StrictModeDroppable droppableId={column}>
-                    {(provided) => (
+                    {(provided: any) => (
                       <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}

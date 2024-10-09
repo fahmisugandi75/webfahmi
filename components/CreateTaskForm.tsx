@@ -13,18 +13,13 @@ import { cn } from "@/lib/utils";
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from "@/hooks/use-toast";
 import { User } from '@supabase/supabase-js';
+import { Task } from '@/types/task';
 
 const DEFAULT_TASK_STATUS = 'waiting';
 
 interface CreateTaskFormProps {
   projectId: string;
-  onSubmit: (task: { 
-    title: string; 
-    description: string; 
-    priority: string; 
-    dueDate: Date | undefined;
-    featuredImage: string | null;
-  }) => void;
+  onSubmit: (task: Task) => void;
   onCancel: () => void;
 }
 
@@ -101,12 +96,12 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onSubmit, on
         imageUrl = publicUrl;
       }
 
-      const newTask = {
+      const newTask: Omit<Task, 'id'> = {
         title,
         description,
         priority,
-        due_date: dueDate,
-        featured_image: imageUrl,
+        due_date: dueDate?.toISOString() ?? undefined,
+        featured_image: imageUrl ?? undefined,
         user_id: user.id,
         project_id: projectId,
         status: DEFAULT_TASK_STATUS
