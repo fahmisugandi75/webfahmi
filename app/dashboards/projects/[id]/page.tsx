@@ -52,8 +52,8 @@ export default function ProjectPage() {
 
   return (
     <div className="mx-auto space-y-4">
-      <div className="flex justify-between items-end mb-6 mt-2">
-        <div>
+      <div className="flex justify-between items-end mb-6 mt-2"> {/* Changed to items-end */}
+        <div className="w-[70%]"> {/* Limit width to 70% */}
           <h1 className="text-3xl font-bold mb-2">
             {projectName ? `${projectName} Tasks` : `Project ${projectId} Tasks`}
           </h1>
@@ -62,20 +62,22 @@ export default function ProjectPage() {
           )}
         </div>
         {ownerName && (
-          <div className="flex items-center space-x-3 ml-4">
-            <div className="text-right">
-              <p className="text-xs text-gray-500 mb-1">Project owner</p>
-              <p className="font-semibold">{ownerName}</p>
+          <div className="w-[30%] flex justify-end"> {/* Changed to justify-end */}
+            <div className="flex items-center space-x-3">
+              <div className="text-right">
+                <p className="text-xs text-gray-500 mb-1">Project owner</p>
+                <p className="font-semibold">{ownerName}</p>
+              </div>
+              {ownerAvatar && (
+                <Image
+                  src={ownerAvatar}
+                  alt={`${ownerName}'s avatar`}
+                  width={52}
+                  height={52}
+                  className="rounded-full"
+                />
+              )}
             </div>
-            {ownerAvatar && (
-              <Image
-                src={ownerAvatar}
-                alt={`${ownerName}'s avatar`}
-                width={48}
-                height={48}
-                className="rounded-full"
-              />
-            )}
           </div>
         )}
       </div>
