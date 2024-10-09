@@ -4,11 +4,11 @@ import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { SmtpMessage } from "../smtp-message";
-import { Button } from "@/components/ui/cta-button";
+import { Button } from "@/components/ui/button";
 import { GithubIcon } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Logo } from '@/components/logo';
+
 
 export default function SignUp({ searchParams }: { searchParams: Message })  {
   return (
