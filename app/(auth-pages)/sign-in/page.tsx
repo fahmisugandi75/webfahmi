@@ -1,5 +1,5 @@
 import { signInAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
+import { FormMessage } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,7 @@ import { GithubIcon } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Logo } from '@/components/logo';
 
-export default function Login({ searchParams }: { searchParams: Message }) 
+export default function Login({ searchParams }: { searchParams: { message?: string } }) 
 
 {
   return (
@@ -31,7 +31,7 @@ export default function Login({ searchParams }: { searchParams: Message })
           </div>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4">
+          <form action={signInAction} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -66,7 +66,6 @@ export default function Login({ searchParams }: { searchParams: Message })
             <SubmitButton
               className="w-full"
               pendingText="Signing In..."
-              formAction={signInAction}
             >
               Sign in
             </SubmitButton>
@@ -113,7 +112,7 @@ export default function Login({ searchParams }: { searchParams: Message })
               Sign up
             </Link>
           </p>
-          <FormMessage message={searchParams} />
+          {searchParams.message && <FormMessage message={searchParams.message} />}
         </CardFooter>
       </Card>
     </div>
