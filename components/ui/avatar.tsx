@@ -60,24 +60,38 @@ export const UserAvatar = React.forwardRef<
       if (user?.id) {
         const supabase = createClient()
         try {
-          const { data, error } = await supabase
-            .storage
-            .from('avatars')
-            .download(`${user.id}`)
+          // Fetch avatar_url from Profiles table
+          const { data: profile, error: profileError } = await supabase
+            .from('Profiles')
+            .select('avatar_url')
+            .eq('id', user.id)
+            .single()
 
-          if (data) {
-            const url = URL.createObjectURL(data)
-            setAvatarUrl(url)
-          } else if (error) {
-            console.error("Error downloading avatar:", error)
-            // Only set the avatar URL if it's not empty
-            if (user.user_metadata?.avatar_url) {
-              setAvatarUrl(user.user_metadata.avatar_url)
+          if (profileError) throw profileError
+
+          if (profile?.avatar_url) {
+            setAvatarUrl(profile.avatar_url)
+          } else {
+            // Fallback to storage if no profile avatar_url
+            const { data, error } = await supabase
+              .storage
+              .from('avatars')
+              .download(`${user.id}`)
+
+            if (data) {
+              const url = URL.createObjectURL(data)
+              setAvatarUrl(url)
+            } else if (error) {
+              console.error("Error downloading avatar:", error)
+              // Fallback to user metadata
+              if (user.user_metadata?.avatar_url) {
+                setAvatarUrl(user.user_metadata.avatar_url)
+              }
             }
           }
         } catch (error) {
           console.error("Error fetching avatar:", error)
-          // Only set the avatar URL if it's not empty
+          // Fallback to user metadata
           if (user.user_metadata?.avatar_url) {
             setAvatarUrl(user.user_metadata.avatar_url)
           }

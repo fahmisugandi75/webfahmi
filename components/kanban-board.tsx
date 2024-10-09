@@ -11,16 +11,7 @@ import { PlusCircle } from 'lucide-react'; // Import the icon
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  project_id: string;
-  user_id: string;
-  priority: string;
-}
+import { Task } from '@/types/task'; // Add this import
 
 interface KanbanBoardProps {
   projectId: string;
