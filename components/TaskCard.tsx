@@ -41,6 +41,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
     });
   };
 
+  const isTaskOverdue = isOverdue(task.due_date);
+
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
       {(provided: any, snapshot: any) => (
@@ -76,19 +78,19 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
               <p className="text-xs text-gray-600 line-clamp-3">{task.description}</p>
               
               <div className="pt-2"> {/* Added padding top here */}
-                <div className="flex items-center text-xs text-gray-500">
-                  <CalendarIcon className="w-4 h-4 mr-1 flex-shrink-0 mt-[3px]" />
-                  <span>
-                    {task.due_date
-                      ? format(new Date(task.due_date), 'MMM d, yyyy')
-                      : "Not set"}
-                  </span>
-                </div>
-                
-                {isOverdue(task.due_date) && (
-                  <div className="flex items-center text-xs text-red-500 mt-1">
-                    <AlertCircle className="w-4 h-4 mr-1 flex-shrink-0 mt-[3px]" />
+                {isTaskOverdue ? (
+                  <div className="flex items-center text-xs text-red-500">
+                    <AlertCircle className="w-4 h-4 mr-1 flex-shrink-0 mt-[1px]" />
                     <span>Overdue</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center text-xs text-gray-500">
+                    <CalendarIcon className="w-4 h-4 mr-1 flex-shrink-0 mt-[1px]" />
+                    <span>
+                      {task.due_date
+                        ? format(new Date(task.due_date), 'MMM d, yyyy')
+                        : "Not set"}
+                    </span>
                   </div>
                 )}
               </div>
