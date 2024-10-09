@@ -165,6 +165,27 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                 <CardHeader className="pb-2">
                   <h3 className="text-lg font-semibold capitalize">{column}</h3>
                 </CardHeader>
+                {column === 'waiting' && (
+                  <CardContent className="pt-0 pb-2">
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full" onClick={() => setIsDialogOpen(true)}>
+                          <PlusCircle className="mr-2 h-4 w-4" /> Add a Task
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Create New Task</DialogTitle>
+                        </DialogHeader>
+                        <CreateTaskForm
+                          projectId={projectId}
+                          onSubmit={handleTaskCreate}
+                          onCancel={() => setIsDialogOpen(false)}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </CardContent>
+                )}
                 <CardContent>
                   <StrictModeDroppable droppableId={column}>
                     {(provided: any) => (
@@ -189,27 +210,6 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                     )}
                   </StrictModeDroppable>
                 </CardContent>
-                {column === 'waiting' && (
-                  <CardFooter>
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" className="w-full" onClick={() => setIsDialogOpen(true)}>
-                          <PlusCircle className="mr-2 h-4 w-4" /> Add Task
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Create New Task</DialogTitle>
-                        </DialogHeader>
-                        <CreateTaskForm
-                          projectId={projectId} // Pass the project ID as a prop
-                          onSubmit={handleTaskCreate} // Pass the handleTaskSubmit function
-                          onCancel={() => setIsDialogOpen(false)} // Pass the handleCancel function
-                        />
-                      </DialogContent>
-                    </Dialog>
-                  </CardFooter>
-                )}
               </Card>
             </div>
           ))}
