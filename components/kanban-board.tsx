@@ -151,6 +151,10 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     }
   };
 
+  const getTaskCountForColumn = (column: string) => {
+    return tasks.filter(task => task.status === column).length;
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -163,14 +167,19 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
             <div key={column} className="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4">
               <Card className="bg-gray-50 dark:bg-gray-900">
                 <CardHeader className="pb-2">
-                  <h3 className="text-lg font-semibold capitalize">{column}</h3>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-lg font-semibold capitalize">{column}</h3>
+                    <span className="text-xs font-medium bg-gray-200 dark:bg-gray-700 rounded-full px-2 py-0.5 min-w-[1.5rem] text-center">
+                      {getTaskCountForColumn(column)}
+                    </span>
+                  </div>
                 </CardHeader>
                 {column === 'waiting' && (
                   <CardContent className="pt-0 pb-2">
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                       <DialogTrigger asChild>
                         <Button variant="outline" className="w-full" onClick={() => setIsDialogOpen(true)}>
-                          <PlusCircle className="mr-2 h-4 w-4" /> Add a Task
+                          <PlusCircle className="mr-2 h-4 w-4" /> Add Task
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
