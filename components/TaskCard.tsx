@@ -61,7 +61,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
                 </span>
               </div>
               
-              {task?.featured_image ? (
+              {task.featured_image && task.featured_image.trim() !== '' && (
                 <div className="relative w-full h-24">
                   <Image 
                     src={task.featured_image} 
@@ -69,36 +69,29 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
                     layout="fill"
                     objectFit="cover"
                     className="rounded-md"
-                    onError={(e) => {
-                      console.error('Image failed to load:', task.featured_image);
-                      // @ts-ignore
-                      e.target.onerror = null; // Prevent infinite loop
-                      // @ts-ignore
-                      e.target.src = '/placeholder.jpg'; // Replace with an actual placeholder image path
-                    }}
                   />
-                </div>
-              ) : (
-                <div className="w-full h-24 bg-gray-200 rounded-md flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">No image</span>
                 </div>
               )}
               
               <p className="text-xs text-gray-600 line-clamp-3">{task.description}</p>
               
-              {task.due_date && (
+              <div className="pt-2"> {/* Added padding top here */}
                 <div className="flex items-center text-xs text-gray-500">
-                  <CalendarIcon className="w-3 h-3 mr-1" />
-                  <span>{format(new Date(task.due_date), 'MMM d, yyyy')}</span>
+                  <CalendarIcon className="w-4 h-4 mr-1 flex-shrink-0 mt-[3px]" />
+                  <span>
+                    {task.due_date
+                      ? format(new Date(task.due_date), 'MMM d, yyyy')
+                      : "Not set"}
+                  </span>
                 </div>
-              )}
-              
-              {isOverdue(task.due_date) && (
-                <div className="flex items-center text-xs text-red-500">
-                  <AlertCircle className="w-3 h-3 mr-1" />
-                  <span>Overdue</span>
-                </div>
-              )}
+                
+                {isOverdue(task.due_date) && (
+                  <div className="flex items-center text-xs text-red-500 mt-1">
+                    <AlertCircle className="w-4 h-4 mr-1 flex-shrink-0 mt-[3px]" />
+                    <span>Overdue</span>
+                  </div>
+                )}
+              </div>
               
               {/* Edit and Delete buttons */}
               <div className="absolute bottom-2 right-2 flex space-x-1">
@@ -109,7 +102,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
                       size="sm" 
                       className="p-1"
                     >
-                      <PencilIcon className="h-4 w-4" />
+                      <PencilIcon className="h-3 w-3" />
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
@@ -134,7 +127,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
                       size="sm" 
                       className="p-1 text-red-500 hover:text-red-700"
                     >
-                      <TrashIcon className="h-4 w-4" />
+                      <TrashIcon className="h-3 w-3" />
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
