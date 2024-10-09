@@ -24,6 +24,8 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
+  const [draggingColumnId, setDraggingColumnId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTasks();
@@ -58,7 +60,14 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     setIsDialogOpen(false); // Close the dialog after creating a task
   };
 
-  const onDragEnd = async (result: any) => {
+  const onDragStart = (start: any) => {
+    setDraggingTaskId(start.draggableId);
+    setDraggingColumnId(start.source.droppableId);
+  };
+
+  const onDragEnd = async (result: any) => { 
+    setDraggingTaskId(null);
+    setDraggingColumnId(null);
     const { source, destination, draggableId } = result;
 
     // If there's no destination, we don't need to do anything
@@ -161,7 +170,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   return (
     <div className="mx-auto p-0">
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
         <div className="flex flex-wrap -mx-2">
           {columns.map((column) => (
             <div key={column} className="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4">
@@ -169,7 +178,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                 <CardHeader className="pb-2">
                   <div className="flex items-center space-x-2">
                     <h3 className="text-lg font-semibold capitalize">{column}</h3>
-                    <span className="text-xs font-medium bg-gray-200 dark:bg-gray-700 rounded-full px-2 py-0.5 min-w-[1.5rem] text-center">
+                    <span className="text-xs font-medium bg-gray-200 dark:bg-gray-700 rounded-sm px-2 py-0.5 min-w-[1.5rem] text-center">
                       {getTaskCountForColumn(column)}
                     </span>
                   </div>
@@ -197,11 +206,13 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                 )}
                 <CardContent>
                   <StrictModeDroppable droppableId={column}>
-                    {(provided: any) => (
+                    {(provided: any, snapshot: any) => (
                       <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className="min-h-[2px]"
+                        className={`min-h-[2px] ${
+                          draggingColumnId === column ? 'border-2 border-dashed border-gray-300 rounded-lg' : ''
+                        }`}
                       >
                         {tasks
                           .filter((task) => task.status === column)
@@ -212,6 +223,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
                               index={index} 
                               onTaskUpdate={handleTaskUpdate} 
                               onTaskDelete={handleTaskDelete}
+                              isDragging={draggingTaskId === task.id.toString()}
                             />
                           ))}
                         {provided.placeholder}

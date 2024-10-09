@@ -25,9 +25,10 @@ interface TaskCardProps {
   index: number;
   onTaskUpdate: (updatedTask: Task) => void;
   onTaskDelete: (taskId: string) => void;
+  isDragging: boolean;
 }
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, onTaskDelete }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, onTaskDelete, isDragging }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -67,15 +68,19 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="mb-3 last:mb-0"
+          className={`mb-3 last:mb-0 ${
+            isDragging ? 'border-2 border-dashed border-gray-300 rounded-lg' : ''
+          }`}
         >
           <Card
-            className={`bg-white p-4 ${snapshot.isDragging ? 'shadow-lg' : 'shadow-sm'} hover:shadow-md transition-shadow duration-200 relative`}
+            className={`bg-white p-4 ${
+              snapshot.isDragging ? 'shadow-lg' : 'shadow-sm'
+            } hover:shadow-md transition-shadow duration-200`}
           >
             <div className="flex flex-col space-y-3">
               <div className="flex justify-between items-start">
                 <h4 className="text-sm font-semibold text-gray-800 line-clamp-2 flex-1 mr-2">{task.title}</h4>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPriorityColor(task.priority)} flex-shrink-0`}>
+                <span className={`text-xs px-2 py-1 rounded-sm font-medium ${getPriorityColor(task.priority)} flex-shrink-0`}>
                   {task.priority}
                 </span>
               </div>
