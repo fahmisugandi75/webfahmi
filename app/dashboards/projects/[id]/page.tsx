@@ -94,7 +94,7 @@ export default function ProjectPage() {
           </div>
           <div>
             <span className="text-sm text-gray-500 mb-1">Priority</span>
-            <p className="bg-gray-200 text-gray-800 px-3 py-1 rounded-md text-xs font-medium">Medium</p>
+            <p className="bg-yellow-200 text-red-800 px-3 py-1 rounded-md text-xs font-medium">Medium</p>
           </div>
           <div>
             <span className="text-sm text-gray-500 mb-1">Tags</span>
