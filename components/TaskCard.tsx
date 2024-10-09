@@ -129,7 +129,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
                       size="sm" 
                       className="p-1 h-6"
                     >
-                      <MoreVertical className="h-4 w-4" />
+                      <MoreVertical className="h-4 w-4 dark:text-gray-900" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-28 p-0">

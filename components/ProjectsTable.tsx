@@ -149,7 +149,7 @@ function ProjectsTableContent({ initialProjects }: { initialProjects?: Project[]
   return (
     <div>
       <div className="mb-4 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Projects</h1>
+        <h2 className="text-2xl font-bold text-gray-800">Projects</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="default" onClick={() => setIsDialogOpen(true)}>
@@ -167,24 +167,21 @@ function ProjectsTableContent({ initialProjects }: { initialProjects?: Project[]
           </DialogContent>
         </Dialog>
       </div>
-      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50">
-              <TableHead className="w-[200px] font-semibold text-gray-600">Owner</TableHead>
-              <TableHead className="font-semibold text-gray-600">Project Name</TableHead>
-              <TableHead className="font-semibold text-gray-600">Description</TableHead>
-              <TableHead className="font-semibold text-gray-600">Created At</TableHead>
-              <TableHead className="w-[100px] font-semibold text-gray-600">Actions</TableHead>
+            <TableRow className="bg-gray-100 rounded-md border overflow-hidden">
+              <TableHead className="w-[200px] font-semibold text-gray-600 py-3 px-4 first:rounded-tl-md last:rounded-tr-md">Owner</TableHead>
+              <TableHead className="font-semibold text-gray-600 py-3 px-4">Project Name</TableHead>
+              <TableHead className="font-semibold text-gray-600 py-3 px-4">Description</TableHead>
+              <TableHead className="font-semibold text-gray-600 py-3 px-4">Created At</TableHead>
+              <TableHead className="w-[100px] font-semibold text-gray-600 py-3 px-4 first:rounded-tl-md last:rounded-tr-md">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {projects.length > 0 ? (
-              projects.map((project, index) => (
-                <TableRow 
-                  key={project.id}
-                  className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
-                >
+              projects.map((project) => (
+                <TableRow key={project.id}>
                   <TableCell className="py-3">
                     <div className="flex items-center space-x-3">
                       {profiles[project.user_id]?.avatar_url ? (

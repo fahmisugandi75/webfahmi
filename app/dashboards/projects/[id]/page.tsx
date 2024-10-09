@@ -50,38 +50,74 @@ export default function ProjectPage() {
     fetchProjectDetails();
   }, [projectId, supabase]);
 
+  // Dummy data for demonstration
+  const dueDate = '28 Feb 2023';
+  const tags = ['Meetings', 'UI Design', 'Development', 'UX Research'];
+
   return (
-    <div className="mx-auto space-y-4">
-      <div className="flex justify-between items-end mb-6 mt-2"> {/* Changed to items-end */}
-        <div className="w-[70%]"> {/* Limit width to 70% */}
-          <h1 className="text-3xl font-bold mb-2">
-            {projectName ? `${projectName} Tasks` : `Project ${projectId} Tasks`}
+    <div className="mx-auto">
+      <div className="relative h-64 mb-8">
+        <Image
+          src="https://yfxskljlopmcwmghykcl.supabase.co/storage/v1/object/public/avatars/vivid-blurred-colorful-wallpaper-background.jpg"
+          alt="Project cover"
+          fill
+          style={{ objectFit: 'cover' }}
+          className="brightness-100"
+        />
+        <div className="absolute inset-0 flex items-end px-12 py-10">
+          <h1 className="text-4xl font-bold text-white">
+            {projectName || `Project ${projectId}`}
           </h1>
-          {projectDescription && (
-            <p className="text-gray-600">{projectDescription}</p>
-          )}
         </div>
-        {ownerName && (
-          <div className="w-[30%] flex justify-end"> {/* Changed to justify-end */}
-            <div className="flex items-center space-x-3">
-              <div className="text-right">
-                <p className="text-xs text-gray-500 mb-1">Project owner</p>
-                <p className="font-semibold">{ownerName}</p>
-              </div>
-              {ownerAvatar && (
-                <Image
-                  src={ownerAvatar}
-                  alt={`${ownerName}'s avatar`}
-                  width={52}
-                  height={52}
-                  className="rounded-full"
-                />
-              )}
+      </div>
+
+      <div className="mb-8">
+        <div className="flex flex-wrap items-start gap-6 mb-4">
+          <div className="flex items-center gap-1">
+            {ownerAvatar && (
+              <Image
+                src={ownerAvatar}
+                alt={`${ownerName}'s avatar`}
+                width={48}
+                height={48}
+                className="rounded-full"
+              />
+            )}
+            <div>
+              <span className="text-sm text-gray-500 mb-1">Owner</span>
+              <p className="text-sm">{ownerName}</p>
             </div>
           </div>
+          <div>
+            <span className="text-sm text-gray-500 mb-1">Due date</span>
+            <p className="text-sm">{dueDate}</p>
+          </div>
+          <div>
+            <span className="text-sm text-gray-500 mb-1">Priority</span>
+            <p className="bg-gray-200 text-gray-800 px-3 py-1 rounded-md text-xs font-medium">Medium</p>
+          </div>
+          <div>
+            <span className="text-sm text-gray-500 mb-1">Tags</span>
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag, index) => (
+                <p key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-xs font-medium">
+                  {tag}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+        {projectDescription && (
+          <>
+            <span className="text-sm text-gray-500 mb-1">Project Overview</span>
+            <p className="text-sm">{projectDescription}</p>
+          </>
         )}
       </div>
-      <KanbanBoard projectId={projectId} />
+
+      <div>
+        <KanbanBoard projectId={projectId} />
+      </div>
     </div>
   );
 }
