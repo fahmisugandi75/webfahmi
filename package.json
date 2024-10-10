@@ -48,6 +48,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.53.0",
     "react-icon-cloud": "^4.1.4",
+    "react-query": "^3.39.3",
     "recharts": "^2.12.7"
   },
   "devDependencies": {

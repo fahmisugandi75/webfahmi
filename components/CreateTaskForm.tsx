@@ -12,38 +12,38 @@ import { CalendarIcon, Edit } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from "@/hooks/use-toast";
-import { User } from '@supabase/supabase-js';
 import { Task } from '@/types/task';
+import { useMutation, useQueryClient } from 'react-query';
+import { User } from '@supabase/supabase-js';
 
 const DEFAULT_TASK_STATUS = 'waiting';
 
 interface CreateTaskFormProps {
   projectId: string;
-  onSubmit: (task: Task) => void;
   onCancel: () => void;
+  onSubmit: (newTask: Task) => void; // Add this line
 }
 
-const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onSubmit, onCancel }) => {
-  const [user, setUser] = useState<User | null>(null);
+const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onCancel, onSubmit }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('medium');
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [featuredImage, setFeaturedImage] = useState<File | null>(null);
   const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    async function getUser() {
-      const supabase = createClient();
+    const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
-      }
-    }
-    getUser();
+      setUser(user);
+    };
+
+    fetchUser();
   }, []);
 
   const handleImageClick = () => {
@@ -59,9 +59,60 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onSubmit, on
     }
   };
 
+  const createTaskMutation = useMutation(
+    async (newTask: Omit<Task, 'id' | 'created_at'>) => {
+      let imageUrl = null;
+
+      if (featuredImage) {
+        const fileExt = featuredImage.name.split('.').pop();
+        const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, featuredImage, { upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+
+        imageUrl = publicUrl;
+      }
+
+      const taskWithImage = { ...newTask, featured_image: imageUrl };
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert(taskWithImage)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(['tasks', projectId]);
+        toast({
+          title: "Success",
+          description: "Task created successfully",
+        });
+        onSubmit(data); // Call the onSubmit prop with the new task
+        onCancel();
+      },
+      onError: (error) => {
+        console.error('Error creating task:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create task. Please try again.",
+          variant: "destructive",
+        });
+      },
+    }
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!user) {
       toast({
         title: "Error",
@@ -71,81 +122,15 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onSubmit, on
       return;
     }
 
-    setIsLoading(true);
-    const supabase = createClient();
-
-    try {
-      let imageUrl = null;
-
-      if (featuredImage) {
-        const fileExt = featuredImage.name.split('.').pop();
-        const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, featuredImage, { upsert: true });
-
-        if (uploadError) {
-          throw new Error(`Upload failed: ${uploadError.message}`);
-        }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(fileName);
-
-        imageUrl = publicUrl;
-      }
-
-      const newTask: Omit<Task, 'id'> = {
-        title,
-        description,
-        priority,
-        due_date: dueDate?.toISOString() ?? undefined,
-        featured_image: imageUrl ?? undefined,
-        user_id: user.id,
-        project_id: projectId,
-        status: DEFAULT_TASK_STATUS
-      };
-
-      const { data, error } = await supabase
-        .from('tasks')
-        .insert(newTask)
-        .select() // Remove the '*, project:projects(image_url)' and just use select()
-        .single();
-
-      if (error) {
-        throw new Error(`Task creation failed: ${error.message}`);
-      }
-
-      console.log('Inserted task:', data);
-
-      onSubmit(data); // Pass the entire task data
-
-      // Reset form fields
-      setTitle('');
-      setDescription('');
-      setPriority('medium');
-      setDueDate(undefined);
-      setFeaturedImage(null);
-      setTempImageUrl(null);
-
-      toast({
-        title: "Task created",
-        description: "Your task has been created successfully.",
-      });
-
-      onCancel(); // Close the modal
-
-    } catch (error) {
-      console.error('Error in task creation process:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to create task. Please try again.',
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    createTaskMutation.mutate({
+      title,
+      description,
+      priority,
+      due_date: dueDate?.toISOString(),
+      user_id: user.id,
+      project_id: projectId,
+      status: DEFAULT_TASK_STATUS,
+    });
   };
 
   if (!user) return null;
@@ -183,31 +168,26 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onSubmit, on
           />
         </div>
       </div>
-      
-      <div className="space-y-2">
-        <label htmlFor="title" className="text-sm font-medium">Task Title</label>
+      <div>
         <Input
-          id="title"
+          type="text"
+          placeholder="Task Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter task title"
           required
         />
       </div>
-      <div className="space-y-2">
-        <label htmlFor="description" className="text-sm font-medium">Task Description</label>
+      <div>
         <Textarea
-          id="description"
+          placeholder="Task Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter task description"
           required
         />
       </div>
-      <div className="space-y-2">
-        <label htmlFor="priority" className="text-sm font-medium">Priority</label>
+      <div>
         <Select value={priority} onValueChange={setPriority}>
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select priority" />
           </SelectTrigger>
           <SelectContent>
@@ -217,16 +197,18 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onSubmit, on
           </SelectContent>
         </Select>
       </div>
-      <div className="space-y-2">
-        <label htmlFor="dueDate" className="text-sm font-medium">Due Date</label>
+      <div>
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant={"outline"}
-              className={`w-full justify-start text-left font-normal ${!dueDate && "text-muted-foreground"}`}
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !dueDate && "text-muted-foreground"
+              )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {dueDate ? format(dueDate, "PPP") : <span>Pick a date</span>}
+              {dueDate ? format(dueDate, "PPP") : <span>Pick a due date</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
@@ -243,8 +225,8 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onSubmit, on
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Creating...' : 'Create Task'}
+        <Button type="submit" disabled={createTaskMutation.isLoading}>
+          {createTaskMutation.isLoading ? 'Creating...' : 'Create Task'}
         </Button>
       </div>
     </form>

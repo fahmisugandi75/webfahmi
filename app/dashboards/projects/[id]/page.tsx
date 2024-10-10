@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 import { useParams } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { KanbanBoard } from '@/components/kanban-board';
@@ -9,46 +9,34 @@ import Image from 'next/image';
 export default function ProjectPage() {
   const params = useParams();
   const projectId = (params?.id as string) || '';
-  const [projectName, setProjectName] = useState('');
-  const [projectDescription, setProjectDescription] = useState('');
-  const [ownerName, setOwnerName] = useState('');
-  const [ownerAvatar, setOwnerAvatar] = useState('');
   const supabase = createClientComponentClient();
 
-  useEffect(() => {
-    async function fetchProjectDetails() {
-      const { data: projectData, error: projectError } = await supabase
-        .from('projects')
-        .select('name, description, user_id')
-        .eq('id', projectId)
-        .single();
+  const { data: projectData, isLoading: projectLoading } = useQuery(['project', projectId], async () => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('name, description, user_id')
+      .eq('id', projectId)
+      .single();
+    if (error) throw error;
+    return data;
+  });
 
-      if (projectError) {
-        console.error('Error fetching project details:', projectError);
-        return;
-      }
+  const { data: profileData, isLoading: profileLoading } = useQuery(['profile', projectData?.user_id], async () => {
+    if (!projectData?.user_id) return null;
+    const { data, error } = await supabase
+      .from('Profiles')
+      .select('fullname, avatar_url')
+      .eq('id', projectData.user_id)
+      .single();
+    if (error) throw error;
+    return data;
+  }, {
+    enabled: !!projectData?.user_id,
+  });
 
-      if (projectData) {
-        setProjectName(projectData.name);
-        setProjectDescription(projectData.description);
-
-        const { data: profileData, error: profileError } = await supabase
-          .from('Profiles')
-          .select('fullname, avatar_url')
-          .eq('id', projectData.user_id)
-          .single();
-
-        if (profileError) {
-          console.error('Error fetching profile details:', profileError);
-        } else if (profileData) {
-          setOwnerName(profileData.fullname);
-          setOwnerAvatar(profileData.avatar_url);
-        }
-      }
-    }
-
-    fetchProjectDetails();
-  }, [projectId, supabase]);
+  if (projectLoading || profileLoading) {
+    return <div>Loading...</div>;
+  }
 
   // Dummy data for demonstration
   const dueDate = '28 Feb 2023';
@@ -66,10 +54,10 @@ export default function ProjectPage() {
         />
         <div className="absolute bottom-0 left-0 right-0 px-12 py-10 bg-gradient-to-t from-orange-400 to-transparent rounded-md">
           <h1 className="text-4xl font-bold text-white mb-4">
-            {projectName || `Project ${projectId}`}
+            {projectData?.name || `Project ${projectId}`}
           </h1>
-          {projectDescription && (
-            <p className="text-md text-white">{projectDescription}</p>
+          {projectData?.description && (
+            <p className="text-md text-white">{projectData.description}</p>
           )}
         </div>
       </div>
@@ -77,10 +65,10 @@ export default function ProjectPage() {
       <div className="mb-8">
         <div className="flex flex-wrap items-start gap-6 mb-4">
           <div className="flex items-center gap-1">
-            {ownerAvatar && (
+            {profileData?.avatar_url && (
               <Image
-                src={ownerAvatar}
-                alt={`${ownerName}'s avatar`}
+                src={profileData.avatar_url}
+                alt={`${profileData.fullname}'s avatar`}
                 width={48}
                 height={48}
                 className="rounded-full"
@@ -88,7 +76,7 @@ export default function ProjectPage() {
             )}
             <div>
               <span className="text-sm text-gray-500 mb-1">Owner</span>
-              <p className="text-sm">{ownerName}</p>
+              <p className="text-sm">{profileData?.fullname}</p>
             </div>
           </div>
           <div>

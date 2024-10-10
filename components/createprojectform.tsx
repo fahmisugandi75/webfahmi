@@ -1,124 +1,87 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { User } from '@supabase/supabase-js';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { useProjects } from './ProjectContext';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useMutation, useQueryClient } from 'react-query';
 import { Project } from './ProjectsTable';
 
 interface CreateProjectFormProps {
-  onSubmit: (newProject: Project) => void;
   onCancel: () => void;
 }
 
-const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onSubmit, onCancel }) => {
-  const { toast } = useToast();
-  const { addProject } = useProjects();
-  const [user, setUser] = useState<User | null>(null);
+const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onCancel }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const supabase = createClient();
 
-  useEffect(() => {
-    async function getUser() {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
-      }
+  const createProjectMutation = useMutation(
+    async (newProject: Omit<Project, 'id' | 'created_at' | 'user_id'>) => {
+      const { data, error } = await supabase
+        .from('projects')
+        .insert(newProject)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('projects');
+        toast({
+          title: "Success",
+          description: "Project created successfully",
+        });
+        onCancel();
+      },
+      onError: (error) => {
+        console.error('Error creating project:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create project. Please try again.",
+          variant: "destructive",
+        });
+      },
     }
-    getUser();
-  }, []);
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to create a project.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    const supabase = createClient();
-
-    try {
-      const { data, error } = await supabase
-        .from('projects')
-        .insert([
-          { name, description, user_id: user.id }
-        ])
-        .select();
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        onSubmit(data[0]);  // This should be enough to update the project list
-      }
-
-      toast({
-        title: "Project created",
-        description: "Your project has been created successfully.",
-      });
-      setName('');
-      setDescription('');
-      setIsOpen(false);  // Close the dialog after successful creation
-    } catch (error) {
-      console.error('Error creating project:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to create project. Please try again.',
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    createProjectMutation.mutate({ name, description });
   };
 
-  const formContent = (
+  return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <label htmlFor="name" className="text-sm font-medium">Project Name</label>
+      <div>
         <Input
-          id="name"
-          placeholder="Enter project name"
+          type="text"
+          placeholder="Project Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
       </div>
-      <div className="space-y-2">
-        <label htmlFor="description" className="text-sm font-medium">Project Description</label>
+      <div>
         <Textarea
-          id="description"
-          placeholder="Enter project description"
+          placeholder="Project Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
         />
       </div>
-      <div className="flex justify-end space-x-2 mt-4">
+      <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit">Create Project</Button>
+        <Button type="submit" disabled={createProjectMutation.isLoading}>
+          {createProjectMutation.isLoading ? 'Creating...' : 'Create Project'}
+        </Button>
       </div>
     </form>
-  );
-
-  return (
-    <div>
-      <p className="mb-4">Fill in the details to create a new project.</p>
-      {user ? formContent : <p>You need to be logged in to create a project.</p>}
-    </div>
   );
 };
 
