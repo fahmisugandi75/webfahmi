@@ -12,7 +12,7 @@ import { CalendarIcon, Edit } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from "@/hooks/use-toast";
-import { Task } from '@/types/task';
+import { Task } from '@/types/types';
 import { useMutation, useQueryClient } from 'react-query';
 import { User } from '@supabase/supabase-js';
 
@@ -130,6 +130,8 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onCancel, on
       user_id: user.id,
       project_id: projectId,
       status: DEFAULT_TASK_STATUS,
+      order: 0, // Add a default order
+      // Remove the created_at field from here
     });
   };
 

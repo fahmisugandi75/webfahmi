@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Project } from './ProjectsTable';
+import { Project } from '@/types/types';
 
 interface CreateProjectFormProps {
   onSubmit: (newProject: Omit<Project, 'id' | 'created_at'>) => void;

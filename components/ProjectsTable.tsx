@@ -12,20 +12,7 @@ import CreateProjectForm from '@/components/createprojectform';
 import { TrashIcon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { createClient } from '@/utils/supabase/client';
-
-export interface Project {
-  id: string;
-  name: string;
-  description: string;
-  created_at: string;
-  user_id: string;
-}
-
-interface Profile {
-  id: string;
-  avatar_url: string | null;
-  fullname: string;
-}
+import { Project, Profile } from '@/types/types';
 
 export function ProjectsTable() {
   const queryClient = useQueryClient();

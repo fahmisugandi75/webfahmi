@@ -11,7 +11,7 @@ import { PlusCircle } from 'lucide-react'; // Import the icon
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Task } from '@/types/task'; // Add this import
+import { Task } from '@/types/types'; // Add this import
 
 interface KanbanBoardProps {
   projectId: string;
@@ -38,11 +38,22 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
-        .eq('project_id', projectId);
+        .eq('project_id', projectId)
+        .order('order', { ascending: true }); // Sort by order
 
       if (error) throw error;
 
-      setTasks(data || []);
+      // Ensure all tasks have the required fields
+      const validTasks = (data || []).filter(task => 
+        task.id && task.status &&
+        task.order !== undefined &&
+        task.project_id &&
+        task.title &&
+        task.description &&
+        task.priority
+      );
+
+      setTasks(validTasks);
     } catch (error) {
       console.error('Error fetching tasks:', error);
       toast({
@@ -78,22 +89,30 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
       return;
     }
 
-    // Find the task that was dragged
-    const draggedTask = tasks.find(task => task.id === draggableId);
-
-    if (!draggedTask) {
-      console.error('Dragged task not found');
-      return;
-    }
-
     // Create a new array of tasks
-    const newTasks = tasks.filter(task => task.id !== draggableId);
+    let newTasks = Array.from(tasks);
 
-    // Update the status of the dragged task
-    const updatedTask = { ...draggedTask, status: destination.droppableId };
+    // Find the moved task
+    const movedTask = newTasks.find(task => task.id.toString() === draggableId);
+    if (!movedTask) return;
 
-    // Insert the updated task at the new position
-    newTasks.splice(destination.index, 0, updatedTask);
+    // Remove the task from its original position
+    newTasks = newTasks.filter(task => task.id !== movedTask.id);
+
+    // Update the moved task's status and order
+    movedTask.status = destination.droppableId;
+    movedTask.order = destination.index;
+
+    // Insert the task at the new position
+    newTasks.splice(destination.index, 0, movedTask);
+
+    // Update the order of tasks in both the source and destination columns
+    newTasks = newTasks.map((task, index) => ({
+      ...task,
+      order: task.status === source.droppableId || task.status === destination.droppableId
+        ? newTasks.filter(t => t.status === task.status).indexOf(task)
+        : task.order
+    }));
 
     // Update the state
     setTasks(newTasks);
@@ -101,22 +120,55 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     // Update the database
     const supabase = createClient();
     try {
-      const { error } = await supabase
-        .from('tasks')
-        .update({ status: updatedTask.status })
-        .eq('id', updatedTask.id);
+      const updatedTasks = newTasks.map(({ id, status, order, project_id, title, description, priority }) => ({ 
+        id, 
+        status, 
+        order, 
+        project_id,
+        title,
+        description,
+        priority
+      }));
+      console.log('Updating tasks:', updatedTasks);
 
-      if (error) throw error;
+      // Fetch the current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
+
+      // Add the user_id to each task update
+      const tasksWithUserId = updatedTasks.map(task => ({
+        ...task,
+        user_id: user.id
+      }));
+
+      const { data, error } = await supabase
+        .from('tasks')
+        .upsert(tasksWithUserId)
+        .select();
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      console.log('Updated tasks:', data);
 
       toast({
         title: "Success",
-        description: "Task status updated successfully",
+        description: "Task order updated successfully",
       });
     } catch (error) {
-      console.error('Error updating task status:', error);
+      console.error('Error updating task order:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+      }
       toast({
         title: "Error",
-        description: "Failed to update task status. Please try again.",
+        description: "Failed to update task order. Please try again.",
         variant: "destructive",
       });
       // Revert the state if the database update fails

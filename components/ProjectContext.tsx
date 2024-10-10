@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { Project } from './ProjectsTable';  // Assuming you have this type defined
+import { Project } from '@/types/types';  // Assuming you have this type defined
 
 interface ProjectContextType {
   projects: Project[];

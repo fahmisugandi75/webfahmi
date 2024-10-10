@@ -8,4 +8,5 @@ export interface Task {
     user_id: string;
     project_id: string;
     status: string;
+    order: number;
   }
