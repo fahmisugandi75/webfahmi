@@ -1,19 +1,17 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabaseClient';
-import { useProjects, ProjectProvider } from './ProjectContext';
 import { Eye, Trash2, PlusCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import CreateProjectForm from '@/components/createprojectform';
-import { createClient } from '@/utils/supabase/client';
 import { TrashIcon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { createClient } from '@/utils/supabase/client';
 
 export interface Project {
   id: string;
@@ -29,16 +27,15 @@ interface Profile {
   fullname: string;
 }
 
-interface ProjectsTableProps {
-  projects?: Project[]; // Make projects optional
-}
-
-export function ProjectsTable({ projects: projectsList }: ProjectsTableProps) {
+export function ProjectsTable() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
+  const supabase = createClient();
 
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
   const { data: projectsData, isLoading, error } = useQuery('projects', async () => {
     const { data, error } = await supabase
@@ -47,8 +44,6 @@ export function ProjectsTable({ projects: projectsList }: ProjectsTableProps) {
       .order('created_at', { ascending: false });
     if (error) throw error;
     return data;
-  }, {
-    initialData: projects,
   });
 
   const { data: profilesData } = useQuery('profiles', async () => {
@@ -75,11 +70,40 @@ export function ProjectsTable({ projects: projectsList }: ProjectsTableProps) {
           description: "Project deleted successfully",
         });
       },
-      onError: (error) => {
+      onError: (error: any) => {
         console.error('Error deleting project:', error);
         toast({
           title: "Error",
           description: "Failed to delete project. Please try again.",
+          variant: "destructive",
+        });
+      },
+    }
+  );
+
+  const createProjectMutation = useMutation(
+    async (newProject: Omit<Project, 'id' | 'created_at'>) => {
+      const { data, error } = await supabase
+        .from('projects')
+        .insert([newProject])
+        .select();
+      if (error) throw error;
+      return data[0];
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('projects');
+        toast({
+          title: "Success",
+          description: "Project created successfully",
+        });
+        setIsDialogOpen(false);
+      },
+      onError: (error: any) => {
+        console.error('Error creating project:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create project. Please try again.",
           variant: "destructive",
         });
       },
@@ -91,16 +115,21 @@ export function ProjectsTable({ projects: projectsList }: ProjectsTableProps) {
   };
 
   const handleDeleteClick = (projectId: string) => {
-    deleteProjectMutation.mutate(projectId);
+    setProjectToDelete(projectId);
+    setIsDeleteDialogOpen(true);
   };
 
-  const handleProjectCreate = async (newProject: Project) => {
-    setProjects((prevProjects: Project[]) => [...prevProjects, newProject]);
-    setIsDialogOpen(false);
+  const confirmDelete = () => {
+    if (projectToDelete) {
+      deleteProjectMutation.mutate(projectToDelete);
+      setIsDeleteDialogOpen(false);
+      setProjectToDelete(null);
+    }
   };
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const handleProjectCreate = (newProject: Omit<Project, 'id' | 'created_at'>) => {
+    createProjectMutation.mutate(newProject);
+  };
 
   if (isLoading) return <div>Loading projects...</div>;
   if (error) return <div>Error: {error.toString()}</div>;
@@ -119,7 +148,10 @@ export function ProjectsTable({ projects: projectsList }: ProjectsTableProps) {
             <DialogHeader>
               <DialogTitle>Create New Project</DialogTitle>
             </DialogHeader>
-            <CreateProjectForm onCancel={() => setIsDialogOpen(false)} />
+            <CreateProjectForm 
+              onCancel={() => setIsDialogOpen(false)}
+              onSubmit={handleProjectCreate}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -184,30 +216,14 @@ export function ProjectsTable({ projects: projectsList }: ProjectsTableProps) {
                         <Eye className="mr-2 h-4 w-4" />
                         View
                       </Button>
-                      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="p-1 text-red-500 hover:text-red-700"
-                            onClick={() => handleDeleteClick(project.id)}
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Delete Project</DialogTitle>
-                            <DialogDescription>
-                              Are you sure you want to delete this project? This action cannot be undone.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                            <Button variant="destructive" onClick={() => handleDeleteClick(project.id)}>Delete</Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="p-1 text-red-500 hover:text-red-700"
+                        onClick={() => handleDeleteClick(project.id)}
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -222,6 +238,21 @@ export function ProjectsTable({ projects: projectsList }: ProjectsTableProps) {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Project</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this project? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmDelete}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,87 +1,88 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { useMutation, useQueryClient } from 'react-query';
 import { Project } from './ProjectsTable';
 
 interface CreateProjectFormProps {
+  onSubmit: (newProject: Omit<Project, 'id' | 'created_at'>) => void;
   onCancel: () => void;
 }
 
-const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onCancel }) => {
+const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onSubmit, onCancel }) => {
+  const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const supabase = createClient();
 
-  const createProjectMutation = useMutation(
-    async (newProject: Omit<Project, 'id' | 'created_at' | 'user_id'>) => {
-      const { data, error } = await supabase
-        .from('projects')
-        .insert(newProject)
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('projects');
-        toast({
-          title: "Success",
-          description: "Project created successfully",
-        });
-        onCancel();
-      },
-      onError: (error) => {
-        console.error('Error creating project:', error);
-        toast({
-          title: "Error",
-          description: "Failed to create project. Please try again.",
-          variant: "destructive",
-        });
-      },
+  useEffect(() => {
+    async function getUser() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUser(user);
+      }
     }
-  );
+    getUser();
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createProjectMutation.mutate({ name, description });
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to create a project.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    onSubmit({ name, description, user_id: user.id });
+    setName('');
+    setDescription('');
   };
 
-  return (
+  const formContent = (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
+      <div className="space-y-2">
+        <label htmlFor="name" className="text-sm font-medium">Project Name</label>
         <Input
-          type="text"
-          placeholder="Project Name"
+          id="name"
+          placeholder="Enter project name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
       </div>
-      <div>
+      <div className="space-y-2">
+        <label htmlFor="description" className="text-sm font-medium">Project Description</label>
         <Textarea
-          placeholder="Project Description"
+          id="description"
+          placeholder="Enter project description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
         />
       </div>
-      <div className="flex justify-end space-x-2">
+      <div className="flex justify-end space-x-2 mt-4">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={createProjectMutation.isLoading}>
-          {createProjectMutation.isLoading ? 'Creating...' : 'Create Project'}
-        </Button>
+        <Button type="submit">Create Project</Button>
       </div>
     </form>
+  );
+
+  return (
+    <div>
+      <p className="mb-4">Fill in the details to create a new project.</p>
+      {user ? formContent : <p>You need to be logged in to create a project.</p>}
+    </div>
   );
 };
 
