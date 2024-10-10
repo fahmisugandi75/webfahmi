@@ -62,12 +62,15 @@ export default function ProjectPage() {
           alt="Project cover"
           fill
           style={{ objectFit: 'cover' }}
-          className="brightness-100"
+          className="brightness-100 rounded-md"
         />
-        <div className="absolute inset-0 flex items-end px-12 py-10">
-          <h1 className="text-4xl font-bold text-white">
+        <div className="absolute bottom-0 left-0 right-0 px-12 py-10 bg-gradient-to-t from-orange-400 to-transparent rounded-md">
+          <h1 className="text-4xl font-bold text-white mb-4">
             {projectName || `Project ${projectId}`}
           </h1>
+          {projectDescription && (
+            <p className="text-md text-white">{projectDescription}</p>
+          )}
         </div>
       </div>
 
@@ -107,14 +110,7 @@ export default function ProjectPage() {
             </div>
           </div>
         </div>
-        {projectDescription && (
-          <>
-            <span className="text-sm text-gray-500 mb-1">Project Overview</span>
-            <p className="text-sm">{projectDescription}</p>
-          </>
-        )}
       </div>
-
       <div>
         <KanbanBoard projectId={projectId} />
       </div>
