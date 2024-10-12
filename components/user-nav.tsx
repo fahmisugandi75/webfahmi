@@ -26,7 +26,7 @@ export function UserNav({ user }: { user: any }) {
       if (user?.id) {
         const supabase = createClient()
         const { data, error } = await supabase
-          .from('Profiles')
+          .from('profiles')
           .select('fullname')
           .eq('id', user.id)
           .single()

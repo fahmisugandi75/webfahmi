@@ -11,7 +11,7 @@ import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from "@/hooks/use-toast";
-import { Task } from '@/types/task';
+import { Task } from '@/types/types';
 
 interface EditTaskFormProps {
   task: Task;

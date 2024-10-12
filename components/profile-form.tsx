@@ -37,7 +37,7 @@ export function ProfileForm() {
 
         // Fetch profile data from the Profiles table
         const { data: profileData, error } = await supabase
-          .from('Profiles')
+          .from('profiles')
           .select('fullname, bio, website, avatar_url')
           .eq('id', user.id)
           .single()
@@ -101,7 +101,7 @@ export function ProfileForm() {
 
       // Update profile in the Profiles table
       const { error: profileError } = await supabase
-        .from('Profiles')
+        .from('profiles')
         .upsert({ 
           id: user?.id, 
           fullname: fullName,

@@ -44,10 +44,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
     });
   };
 
-  const getDueDateStatus = (dueDate: string | undefined) => {
-    if (!dueDate) return { text: "Not set", color: "text-gray-500", isAlert: false };
+  const getDueDateStatus = (task: Task) => {
+    if (task.status === 'completed') {
+      return { text: "Completed", color: "text-green-500", isAlert: false };
+    }
     
-    const date = new Date(dueDate);
+    if (!task.due_date) return { text: "Not set", color: "text-gray-500", isAlert: false };
+    
+    const date = new Date(task.due_date);
     if (isPast(date) && !isToday(date)) {
       return { text: "Overdue", color: "text-red-500", isAlert: true };
     } else if (isToday(date)) {
@@ -61,7 +65,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, index, onTaskUpdate, o
     }
   };
 
-  const dueDateStatus = getDueDateStatus(task.due_date);
+  const dueDateStatus = getDueDateStatus(task);
 
   const handleEditClick = () => {
     setIsPopoverOpen(false);

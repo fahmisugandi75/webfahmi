@@ -60,9 +60,9 @@ export const UserAvatar = React.forwardRef<
       if (user?.id) {
         const supabase = createClient()
         try {
-          // Fetch avatar_url from Profiles table
+          // Fetch avatar_url from profiles table
           const { data: profile, error: profileError } = await supabase
-            .from('Profiles')
+            .from('profiles')
             .select('avatar_url')
             .eq('id', user.id)
             .single()

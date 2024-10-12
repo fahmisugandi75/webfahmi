@@ -15,6 +15,8 @@ export interface Profile {
     project_id: string;
     status: string;
     order: number;
+    updated_by: string;
+    completed_at?: string;
   }
 
   export interface Project {

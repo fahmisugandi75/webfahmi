@@ -13,6 +13,7 @@ import { TrashIcon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { createClient } from '@/utils/supabase/client';
 import { Project, Profile } from '@/types/types';
+import { useUserSession } from '@/hooks/useUserSession';
 
 export function ProjectsTable() {
   const queryClient = useQueryClient();
@@ -24,18 +25,37 @@ export function ProjectsTable() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
-  const { data: projectsData, isLoading, error } = useQuery('projects', async () => {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    return data;
-  });
+  // Use the new hook
+  const { data: userSession, isLoading: isUserSessionLoading } = useUserSession();
 
+  // Query for projects
+  const { data: projectsData, isLoading: isProjectsLoading, error } = useQuery(
+    ['projects', userSession?.userId, userSession?.isAdmin],
+    async () => {
+      if (!userSession?.userId) return [];
+      
+      let query = supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (!userSession.isAdmin) {
+        query = query.eq('user_id', userSession.userId);
+      }
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+    {
+      enabled: !!userSession?.userId,
+    }
+  );
+
+  // Query for profiles
   const { data: profilesData } = useQuery('profiles', async () => {
     const { data, error } = await supabase
-      .from('Profiles')
+      .from('profiles')
       .select('id, avatar_url, fullname');
     if (error) throw error;
     return Object.fromEntries(data.map((profile) => [profile.id, profile]));
@@ -118,13 +138,17 @@ export function ProjectsTable() {
     createProjectMutation.mutate(newProject);
   };
 
+  const isLoading = isUserSessionLoading || isProjectsLoading;
+
   if (isLoading) return <div>Loading projects...</div>;
-  if (error) return <div>Error: {error.toString()}</div>;
+  if (error) return <div>Error: {(error as Error).message}</div>;
 
   return (
     <div>
       <div className="mb-4 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Projects</h2>
+        <h2 className="text-3xl font-bold text-gray-800">
+          {userSession?.isAdmin ? "All Projects" : "My Projects"}
+        </h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="default" onClick={() => setIsDialogOpen(true)}>

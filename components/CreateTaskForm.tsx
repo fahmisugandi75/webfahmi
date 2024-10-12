@@ -130,7 +130,8 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({ projectId, onCancel, on
       user_id: user.id,
       project_id: projectId,
       status: DEFAULT_TASK_STATUS,
-      order: 0, // Add a default order
+      order: 0,
+      updated_by: user.id,
       // Remove the created_at field from here
     });
   };

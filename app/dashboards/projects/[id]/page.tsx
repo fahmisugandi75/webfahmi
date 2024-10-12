@@ -24,7 +24,7 @@ export default function ProjectPage() {
   const { data: profileData, isLoading: profileLoading } = useQuery(['profile', projectData?.user_id], async () => {
     if (!projectData?.user_id) return null;
     const { data, error } = await supabase
-      .from('Profiles')
+      .from('profiles')
       .select('fullname, avatar_url')
       .eq('id', projectData.user_id)
       .single();
@@ -64,13 +64,13 @@ export default function ProjectPage() {
 
       <div className="mb-8">
         <div className="flex flex-wrap items-start gap-6 mb-4">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {profileData?.avatar_url && (
               <Image
                 src={profileData.avatar_url}
                 alt={`${profileData.fullname}'s avatar`}
-                width={48}
-                height={48}
+                width={40}
+                height={40}
                 className="rounded-full"
               />
             )}
@@ -85,13 +85,13 @@ export default function ProjectPage() {
           </div>
           <div>
             <span className="text-sm text-gray-500 mb-1">Priority</span>
-            <p className="bg-yellow-200 text-red-800 px-3 py-1 rounded-md text-xs font-medium">Medium</p>
+            <p className="bg-yellow-200 text-red-800 px-2 py-1 rounded-sm text-xs font-medium">Medium</p>
           </div>
           <div>
             <span className="text-sm text-gray-500 mb-1">Tags</span>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag, index) => (
-                <p key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-xs font-medium">
+                <p key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-sm text-xs font-medium">
                   {tag}
                 </p>
               ))}

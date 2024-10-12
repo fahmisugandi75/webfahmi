@@ -15,7 +15,7 @@ export const signUpAction = async (formData: FormData) => {
     return { error: "Email and password are required" };
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -27,6 +27,21 @@ export const signUpAction = async (formData: FormData) => {
     console.error(error.code + " " + error.message);
     return encodedRedirect("error", "/sign-up", error.message);
   } else {
+    // Call the API route to create profile
+    const res = await fetch(`${origin}/api/create-profile`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: data.user!.id }),
+    });
+
+    const profileResult = await res.json();
+    if (!profileResult.success) {
+      console.error('Failed to create profile:', profileResult.error);
+      // You might want to handle this error differently
+    }
+
     return encodedRedirect(
       "success",
       "/sign-up",
