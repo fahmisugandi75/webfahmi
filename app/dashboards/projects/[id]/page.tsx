@@ -5,11 +5,24 @@ import { useParams } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { KanbanBoard } from '@/components/kanban-board';
 import Image from 'next/image';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import CreateTaskForm from '@/components/CreateTaskForm';
+import { useState } from 'react';
 
 export default function ProjectPage() {
   const params = useParams();
   const projectId = (params?.id as string) || '';
   const supabase = createClientComponentClient();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const { data: projectData, isLoading: projectLoading } = useQuery(['project', projectId], async () => {
     const { data, error } = await supabase
@@ -41,6 +54,11 @@ export default function ProjectPage() {
   // Dummy data for demonstration
   const dueDate = '28 Feb 2023';
   const tags = ['Meetings', 'UI Design', 'Development', 'UX Research'];
+
+  const handleCreateTask = (newTask: any) => {
+    // Handle task creation logic here
+    setIsSheetOpen(false);
+  };
 
   return (
     <div className="mx-auto">
@@ -100,7 +118,48 @@ export default function ProjectPage() {
         </div>
       </div>
       <div>
-        <KanbanBoard projectId={projectId} />
+        <Tabs defaultValue="kanban" className="w-full">
+          <div className="flex justify-between items-center mb-4">
+            <TabsList>
+              <TabsTrigger value="kanban">Kanban Board</TabsTrigger>
+              <TabsTrigger value="calendar">Calendar View</TabsTrigger>
+              <TabsTrigger value="gantt">Gantt Chart</TabsTrigger>
+            </TabsList>
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <SheetTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" /> Add Task
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Create New Task</SheetTitle>
+                </SheetHeader>
+                <CreateTaskForm
+                  projectId={projectId}
+                  onCancel={() => setIsSheetOpen(false)}
+                  onSubmit={handleCreateTask}
+                />
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          <TabsContent value="kanban">
+            <KanbanBoard projectId={projectId} />
+          </TabsContent>
+          <TabsContent value="calendar">
+            <div className="p-4 text-center">
+              <h3 className="text-xl font-semibold mb-2">Calendar View</h3>
+              <p>Coming soon! This feature is currently under development.</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="gantt">
+            <div className="p-4 text-center">
+              <h3 className="text-xl font-semibold mb-2">Gantt Chart</h3>
+              <p>Coming soon! This feature is currently under development.</p>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

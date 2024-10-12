@@ -17,7 +17,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import CreateTaskForm from './CreateTaskForm';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -177,94 +176,55 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
     setIsSheetOpen(false);
   };
 
-  const KanbanView = () => (
-    <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-      <div className="flex flex-wrap -mx-2">
-        {columns.map((column) => (
-          <div key={column} className="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4">
-            <Card className="bg-gray-50 dark:bg-gray-900">
-              <CardHeader className="pb-2">
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-semibold capitalize">{column}</h3>
-                  <span className="text-xs font-medium bg-gray-200 dark:bg-gray-700 rounded-sm px-2 py-0.5 min-w-[1.5rem] text-center">
-                    {sortedTasks[column]?.length || 0}
-                  </span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <StrictModeDroppable droppableId={column}>
-                  {(provided: any, snapshot: any) => (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className={`min-h-[2px] ${
-                        snapshot.isDraggingOver ? 'bg-blue-100 dark:bg-blue-900' : ''
-                      }`}
-                    >
-                      {sortedTasks[column]?.map((task, index) => (
-                        <TaskCard 
-                          key={task.id} 
-                          task={task} 
-                          index={index} 
-                          onTaskUpdate={updateTaskMutation.mutate} 
-                          onTaskDelete={handleDeleteTask}
-                          isDragging={draggingTaskId === task.id.toString()}
-                        />
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </StrictModeDroppable>
-              </CardContent>
-            </Card>
-          </div>
-        ))}
-      </div>
-    </DragDropContext>
-  );
-
   if (isLoading) {
     return <div>Loading tasks...</div>;
   }
 
   return (
     <div className="mx-auto p-0">
-      <Tabs defaultValue="kanban" className="w-full">
-        <div className="flex justify-between items-center mb-4">
-          <TabsList>
-            <TabsTrigger value="kanban">Kanban Board</TabsTrigger>
-            <TabsTrigger value="calendar" >Calendar View</TabsTrigger>
-            <TabsTrigger value="gantt" >Gantt Chart</TabsTrigger>
-          </TabsList>
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Add Task
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Create New Task</SheetTitle>
-              </SheetHeader>
-              <CreateTaskForm
-                projectId={projectId}
-                onCancel={() => setIsSheetOpen(false)}
-                onSubmit={handleCreateTask}
-              />
-            </SheetContent>
-          </Sheet>
+      <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+        <div className="flex flex-wrap -mx-2">
+          {columns.map((column) => (
+            <div key={column} className="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4">
+              <Card className="bg-gray-50 dark:bg-gray-900">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-lg font-semibold capitalize">{column}</h3>
+                    <span className="text-xs font-medium bg-gray-200 dark:bg-gray-700 rounded-sm px-2 py-0.5 min-w-[1.5rem] text-center">
+                      {sortedTasks[column]?.length || 0}
+                    </span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <StrictModeDroppable droppableId={column}>
+                    {(provided: any, snapshot: any) => (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className={`min-h-[2px] ${
+                          snapshot.isDraggingOver ? 'bg-blue-100 dark:bg-blue-900' : ''
+                        }`}
+                      >
+                        {sortedTasks[column]?.map((task, index) => (
+                          <TaskCard 
+                            key={task.id} 
+                            task={task} 
+                            index={index} 
+                            onTaskUpdate={updateTaskMutation.mutate} 
+                            onTaskDelete={handleDeleteTask} // Pass the delete function here
+                            isDragging={draggingTaskId === task.id.toString()}
+                          />
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </StrictModeDroppable>
+                </CardContent>
+              </Card>
+            </div>
+          ))}
         </div>
-
-        <TabsContent value="kanban">
-          <KanbanView />
-        </TabsContent>
-        <TabsContent value="calendar">
-          <div>Calendar view coming soon...</div>
-        </TabsContent>
-        <TabsContent value="gantt">
-          <div>Gantt chart coming soon...</div>
-        </TabsContent>
-      </Tabs>
+      </DragDropContext>
     </div>
   );
 }
